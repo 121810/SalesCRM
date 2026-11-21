@@ -199,7 +199,7 @@ namespace BiristaCRM.Repository
             var productOk = _db.ProductMasters.Any(p => p.Id == productId && !p.IsDeleted && p.CompanyId == _current.CompanyId);
             if (!clientOk || !productOk)
             {
-                throw new InvalidOperationException("Invalid client or product for this company.");
+                throw new InvalidOperationException("Invalid customer or product for this company.");
             }
         }
     }

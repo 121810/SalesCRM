@@ -165,7 +165,7 @@ namespace BiristaCRM.ViewModels
         public Guid? Id { get; set; }
 
         [Required]
-        [Display(Name = "Client")]
+        [Display(Name = "Customer")]
         public Guid ClientId { get; set; }
 
         [Required]
@@ -211,7 +211,7 @@ namespace BiristaCRM.ViewModels
         public Guid? Id { get; set; }
 
         [Required]
-        [Display(Name = "Client")]
+        [Display(Name = "Customer")]
         public Guid ClientId { get; set; }
 
         [Required]

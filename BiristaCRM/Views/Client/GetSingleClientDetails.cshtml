@@ -1,7 +1,7 @@
-﻿@using BiristaCRM.Enums
+@using BiristaCRM.Enums
 @model BiristaCRM.ViewModels.ClientDetailsViewModel
 @{
-    ViewData["Title"] = "Client Details";
+    ViewData["Title"] = "Customer Details";
     var client = Model.Client;
 }
 
@@ -10,15 +10,15 @@
         <div>
             <a asp-action="Index" class="sf-back-link">
                 <i class="bi bi-arrow-left"></i>
-                Back to clients
+                Back to customers
             </a>
-            <h2>Client profile</h2>
+            <h2>Customer profile</h2>
             <p>Complete account information and recent activity.</p>
         </div>
         <div class="sf-page-actions">
             <a asp-action="Edit" asp-route-id="@client.Id" class="sf-btn sf-btn-primary">
                 <i class="bi bi-pencil"></i>
-                Edit client
+                Edit customer
             </a>
         </div>
     </div>

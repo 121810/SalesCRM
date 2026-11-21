@@ -1,26 +1,26 @@
-﻿@using BiristaCRM.Enums
+@using BiristaCRM.Enums
 @using BiristaCRM.Interfaces
 @using BiristaCRM.Models
 @using BiristaCRM.ViewModels
 @inject ICurrentUserService CurrentUser
 @model List<UserMaster>
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = CurrentUser.IsSuperAdmin ? "Users" : "SalesPersons";
     var filter = ViewBag.Filter as UserFilterViewModel ?? new UserFilterViewModel();
 }
 
 <div class="sf-page-enter">
     <div class="sf-page-header">
         <div>
-            <h2>Users</h2>
-            <p>Team members and role access across the CRM.</p>
+            <h2>@(CurrentUser.IsSuperAdmin ? "Users" : "SalesPersons")</h2>
+            <p>Sales team members and role access across the CRM.</p>
         </div>
         @if (CurrentUser.CanManageUsers)
         {
             <div class="sf-page-actions">
                 <a asp-action="Create" class="sf-btn sf-btn-primary">
                     <i class="bi bi-person-plus"></i>
-                    Invite User
+                    @(CurrentUser.IsSuperAdmin ? "Invite User" : "Add SalesPerson")
                 </a>
             </div>
         }
@@ -76,7 +76,7 @@
             <div class="sf-stat-card">
                 <div class="sf-stat-icon teal"><i class="bi bi-people"></i></div>
                 <div class="sf-stat-body">
-                    <span class="sf-stat-label">Matching users</span>
+                    <span class="sf-stat-label">@(CurrentUser.IsSuperAdmin ? "Matching users" : "Total SalesPersons")</span>
                     <h3 class="sf-stat-value">@Model.Count</h3>
                 </div>
             </div>
@@ -104,15 +104,15 @@
     <div class="sf-panel">
         <div class="sf-panel-header">
             <div>
-                <h5>Team directory</h5>
-                <span class="sf-panel-sub">@Model.Count users</span>
+                <h5>@(CurrentUser.IsSuperAdmin ? "Team directory" : "SalesPerson directory")</h5>
+                <span class="sf-panel-sub">@Model.Count @(CurrentUser.IsSuperAdmin ? "users" : "sales persons")</span>
             </div>
         </div>
         <div class="table-responsive">
             <table class="sf-table">
                 <thead>
                     <tr>
-                        <th>User</th>
+                        <th>@(CurrentUser.IsSuperAdmin ? "User" : "SalesPerson")</th>
                         <th>Email</th>
                         <th>Mobile</th>
                         <th>Role</th>
@@ -123,7 +123,7 @@
                 <tbody>
                     @if (!Model.Any())
                     {
-                        <tr><td colspan="6" class="text-muted text-center py-4">No users found.</td></tr>
+                        <tr><td colspan="6" class="text-muted text-center py-4">No @(CurrentUser.IsSuperAdmin ? "users" : "sales persons") found.</td></tr>
                     }
                     @foreach (var u in Model)
                     {
@@ -172,7 +172,7 @@
                                                 <i class="bi bi-slash-circle"></i>
                                             </button>
                                         </form>
-                                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this user?');">
+                                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this @(CurrentUser.IsSuperAdmin ? "user" : "sales person")?');">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@u.Id" />
                                             <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>

@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Enums;
+using BiristaCRM.Enums;
 using BiristaCRM.Interfaces;
 using BiristaCRM.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +61,7 @@ namespace BiristaCRM.Controllers
             try
             {
                 await _userService.CreateUserAsync(model);
-                TempData["Success"] = "User created successfully.";
+                TempData["Success"] = _current.IsSuperAdmin ? "User created successfully." : "SalesPerson created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -82,7 +82,9 @@ namespace BiristaCRM.Controllers
             }
 
             await _userService.SetActiveAsync(id, isActive);
-            TempData["Success"] = isActive ? "User activated." : "User deactivated.";
+            TempData["Success"] = isActive
+                ? (_current.IsSuperAdmin ? "User activated." : "SalesPerson activated.")
+                : (_current.IsSuperAdmin ? "User deactivated." : "SalesPerson deactivated.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -96,7 +98,7 @@ namespace BiristaCRM.Controllers
             }
 
             await _userService.SoftDeleteUserAsync(id);
-            TempData["Success"] = "User deleted.";
+            TempData["Success"] = _current.IsSuperAdmin ? "User deleted." : "SalesPerson deleted.";
             return RedirectToAction(nameof(Index));
         }
 

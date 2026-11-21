@@ -2,7 +2,7 @@
 @model BiristaCRM.ViewModels.CreateClientViewModel
 
 @{
-    ViewData["Title"] = "Create Client";
+    ViewData["Title"] = "Create Customer";
 }
 
 <div class="sf-page-enter">
@@ -10,9 +10,9 @@
         <div>
             <a asp-action="Index" class="sf-back-link">
                 <i class="bi bi-arrow-left"></i>
-                Back to clients
+                Back to customers
             </a>
-            <h2>Create Client</h2>
+            <h2>Create Customer</h2>
             <p>Capture business, contact, and status details for a new account.</p>
         </div>
     </div>
@@ -108,7 +108,7 @@
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>
                             <div class="col-lg-6">
-                                <label class="form-label">Client active</label>
+                                <label class="form-label">Customer active</label>
                                 <div class="sf-switch-row">
                                     <label class="sf-switch">
                                         <input asp-for="IsActive" />
@@ -135,7 +135,7 @@
                 </button>
                 <button type="submit" class="sf-btn sf-btn-primary">
                     <i class="bi bi-check-lg"></i>
-                    Save client
+                    Save customer
                 </button>
             </div>
         </div>

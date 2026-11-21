@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Interfaces;
+using BiristaCRM.Interfaces;
 using BiristaCRM.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +43,7 @@ namespace BiristaCRM.Controllers
             try
             {
                 await _clientService.CreateClient(model);
-                TempData["Success"] = "Client created successfully.";
+                TempData["Success"] = "Customer created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace BiristaCRM.Controllers
             var client = await _clientService.GetSingleClientDetails(id);
             if (client == null)
             {
-                TempData["Error"] = "Client not found.";
+                TempData["Error"] = "Customer not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -93,7 +93,7 @@ namespace BiristaCRM.Controllers
             try
             {
                 await _clientService.UpdateClient(id, model);
-                TempData["Success"] = "Client updated successfully.";
+                TempData["Success"] = "Customer updated successfully.";
                 return RedirectToAction(nameof(GetSingleClientDetails), new { id });
             }
             catch (Exception ex)
@@ -109,7 +109,7 @@ namespace BiristaCRM.Controllers
             var details = await _clientService.GetClientDetailsWithVisits(id);
             if (details == null)
             {
-                TempData["Error"] = "Client not found.";
+                TempData["Error"] = "Customer not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -121,7 +121,7 @@ namespace BiristaCRM.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             await _clientService.SoftDeleteClient(id);
-            TempData["Success"] = "Client deleted.";
+            TempData["Success"] = "Customer deleted.";
             return RedirectToAction(nameof(Index));
         }
     }

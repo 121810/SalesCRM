@@ -1,4 +1,4 @@
-﻿@model BiristaCRM.ViewModels.DashboardViewModel
+@model BiristaCRM.ViewModels.DashboardViewModel
 @using BiristaCRM.Interfaces
 @inject ICurrentUserService CurrentUser
 @{
@@ -12,14 +12,14 @@
     <div class="sf-page-header">
         <div>
             <h2>@Model.UserName</h2>
-            <p>@(CurrentUser.IsSuperAdmin ? "Platform overview across all tenant companies." : "Live overview of clients, visits, and revenue.")</p>
+            <p>@(CurrentUser.IsSuperAdmin ? "Platform overview across all tenant companies." : "Live overview of customers, visits, and revenue.")</p>
         </div>
         @if (!CurrentUser.IsSuperAdmin)
         {
             <div class="sf-quick-actions">
                 <a asp-controller="Client" asp-action="Create" class="sf-btn sf-btn-primary">
                     <i class="bi bi-person-plus"></i>
-                    Add Client
+                    Add Customer
                 </a>
                 <a asp-controller="Visit" asp-action="Create" class="sf-btn sf-btn-ghost">
                     <i class="bi bi-geo-alt"></i>
@@ -56,7 +56,7 @@
             <div class="sf-stat-card">
                 <div class="sf-stat-icon teal"><i class="bi bi-people"></i></div>
                 <div class="sf-stat-body">
-                    <span class="sf-stat-label">Total Clients</span>
+                    <span class="sf-stat-label">Total Customers</span>
                     <h3 class="sf-stat-value" data-count="@Model.TotalClients">@Model.TotalClients</h3>
                     <span class="sf-stat-meta"><i class="bi bi-arrow-up-short"></i> +@Model.ClientsThisMonth this month</span>
                 </div>

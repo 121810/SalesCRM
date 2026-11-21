@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Data;
+using BiristaCRM.Data;
 using BiristaCRM.Enums;
 using BiristaCRM.Interfaces;
 using BiristaCRM.Models;
@@ -131,7 +131,7 @@ namespace BiristaCRM.Repository
         {
             if (_current.IsSuperAdmin)
             {
-                throw new InvalidOperationException("Super Admin cannot create clients. Switch to a company admin account.");
+                throw new InvalidOperationException("Super Admin cannot create customers. Switch to a company admin account.");
             }
 
             var client = new ClientMaster
@@ -168,7 +168,7 @@ namespace BiristaCRM.Repository
             var client = await GetSingleClientDetails(id);
             if (client == null)
             {
-                throw new InvalidOperationException("Client not found.");
+                throw new InvalidOperationException("Customer not found.");
             }
 
             client.BusinessName = model.BusinessName;

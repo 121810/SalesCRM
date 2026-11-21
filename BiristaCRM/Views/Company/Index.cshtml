@@ -1,4 +1,4 @@
-﻿@using BiristaCRM.ViewModels
+@using BiristaCRM.ViewModels
 @model CompanyIndexViewModel
 @{
     ViewData["Title"] = "Company";
@@ -219,7 +219,7 @@
                         <div class="sf-panel-header"><h5>Workspace summary</h5></div>
                         <div class="sf-panel-body">
                             <div class="sf-info-row"><span>Users</span><strong>@company.UserCount seats</strong></div>
-                            <div class="sf-info-row"><span>Clients</span><strong>@company.ClientCount</strong></div>
+                            <div class="sf-info-row"><span>Customers</span><strong>@company.ClientCount</strong></div>
                             <div class="sf-info-row"><span>Products</span><strong>@company.ProductCount SKUs</strong></div>
                             <div class="sf-info-row"><span>Created</span><strong>@company.CreatedAt.ToString("dd MMM yyyy")</strong></div>
                         </div>

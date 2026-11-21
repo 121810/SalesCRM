@@ -20,9 +20,9 @@
             <div class="sf-panel-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="ClientId" class="form-label">Client</label>
+                        <label asp-for="ClientId" class="form-label">Customer</label>
                         <select asp-for="ClientId" class="form-select" asp-items="ViewBag.Clients">
-                            <option value="">Select client</option>
+                            <option value="">Select customer</option>
                         </select>
                         <span asp-validation-for="ClientId" class="text-danger"></span>
                     </div>

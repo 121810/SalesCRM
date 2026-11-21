@@ -97,7 +97,7 @@ namespace BiristaCRM.Repository
             var activity = new List<ActivityItemViewModel>();
             foreach (var o in orderList.OrderByDescending(x => x.CreatedAt).Take(3))
             {
-                var clientName = clientList.FirstOrDefault(c => c.Id == o.ClientId)?.BusinessName ?? "Client";
+                var clientName = clientList.FirstOrDefault(c => c.Id == o.ClientId)?.BusinessName ?? "Customer";
                 activity.Add(new ActivityItemViewModel
                 {
                     Text = $"Order #{o.OrderNo} placed by {clientName}",
@@ -108,7 +108,7 @@ namespace BiristaCRM.Repository
 
             foreach (var v in visitList.OrderByDescending(x => x.CreatedAt).Take(3))
             {
-                var clientName = clientList.FirstOrDefault(c => c.Id == v.ClientId)?.BusinessName ?? "Client";
+                var clientName = clientList.FirstOrDefault(c => c.Id == v.ClientId)?.BusinessName ?? "Customer";
                 activity.Add(new ActivityItemViewModel
                 {
                     Text = $"Visit logged for {clientName} ({v.Status})",
@@ -121,7 +121,7 @@ namespace BiristaCRM.Repository
             {
                 activity.Add(new ActivityItemViewModel
                 {
-                    Text = $"New client {c.BusinessName} added",
+                    Text = $"New customer {c.BusinessName} added",
                     TimeAgo = ToTimeAgo(c.CreatedAt),
                     Color = "info"
                 });

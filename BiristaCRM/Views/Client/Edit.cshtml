@@ -1,7 +1,7 @@
 @using BiristaCRM.Enums
 @model BiristaCRM.ViewModels.CreateClientViewModel
 @{
-    ViewData["Title"] = "Edit Client";
+    ViewData["Title"] = "Edit Customer";
     var id = (Guid)ViewBag.ClientId;
 }
 
@@ -10,9 +10,9 @@
         <div>
             <a asp-action="Index" class="sf-back-link">
                 <i class="bi bi-arrow-left"></i>
-                Back to clients
+                Back to customers
             </a>
-            <h2>Edit Client</h2>
+            <h2>Edit Customer</h2>
             <p>Update business, contact, and status details.</p>
         </div>
     </div>
@@ -77,7 +77,7 @@
                                 <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ClientStatus>()"></select>
                             </div>
                             <div class="col-lg-6">
-                                <label class="form-label">Client active</label>
+                                <label class="form-label">Customer active</label>
                                 <div class="sf-switch-row">
                                     <label class="sf-switch">
                                         <input asp-for="IsActive" />
