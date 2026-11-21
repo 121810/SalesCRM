@@ -1,0 +1,108 @@
+@model BiristaCRM.ViewModels.SettingsViewModel
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Settings</h2>
+            <p>Profile preferences and security.</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <form asp-action="Index" method="post" autocomplete="off">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="sf-panel mb-3">
+                    <div class="sf-panel-header"><h5>Profile</h5></div>
+                    <div class="sf-panel-body">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <img src="~/images/avtar.png" alt="Avatar" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--sf-border);" />
+                            <div>
+                                <div class="sf-cell-strong">@Model.FullName</div>
+                                <small class="text-muted">@Model.Role</small>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FullName" class="form-label">Full name</label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" class="form-control" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Mobile" class="form-label">Mobile</label>
+                                <input asp-for="Mobile" class="form-control" />
+                                <span asp-validation-for="Mobile" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label">Role</label>
+                                <input asp-for="Role" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sf-panel mb-3">
+                    <div class="sf-panel-header"><h5>Change password</h5></div>
+                    <div class="sf-panel-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="CurrentPassword" class="form-label">Current password</label>
+                                <input asp-for="CurrentPassword" class="form-control" />
+                                <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NewPassword" class="form-label">New password</label>
+                                <input asp-for="NewPassword" class="form-control" />
+                                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ConfirmPassword" class="form-label">Confirm password</label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sf-form-footer">
+                    <span></span>
+                    <button type="submit" class="sf-btn sf-btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        Save settings
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sf-panel">
+                <div class="sf-panel-header"><h5>Session</h5></div>
+                <div class="sf-panel-body">
+                    <form asp-controller="Login" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="sf-btn sf-btn-ghost w-100 justify-content-center">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Sign out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

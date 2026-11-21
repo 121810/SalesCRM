@@ -1,0 +1,182 @@
+﻿@using BiristaCRM.Enums
+@using BiristaCRM.Interfaces
+@using BiristaCRM.ViewModels
+@inject ICurrentUserService CurrentUser
+@model List<OrderListItemViewModel>
+@{
+    ViewData["Title"] = "Orders";
+    int orderCount = ViewBag.OrderCount ?? 0;
+    decimal revenue = ViewBag.Revenue ?? 0m;
+    int awaiting = ViewBag.AwaitingPayment ?? 0;
+    var filter = ViewBag.Filter as OrderFilterViewModel ?? new OrderFilterViewModel();
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Orders</h2>
+            <p>Track order volume, payments, and fulfillment status.</p>
+        </div>
+        @if (!CurrentUser.IsSuperAdmin)
+        {
+            <div class="sf-page-actions">
+                <a asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    New Order
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-cart3"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Orders</span>
+                    <h3 class="sf-stat-value">@orderCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-currency-rupee"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Revenue</span>
+                    <h3 class="sf-stat-value">₹@revenue.ToString("N0")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon amber"><i class="bi bi-clock-history"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Awaiting payment</span>
+                    <h3 class="sf-stat-value">@awaiting</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-3">
+                <label class="form-label">Search</label>
+                <input type="text" name="Search" value="@filter.Search" class="form-control" placeholder="Order no, client, or product" />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Payment status</label>
+                <select name="PaymentStatus" class="form-select">
+                    <option value="">All</option>
+                    @foreach (PaymentStatus status in Enum.GetValues(typeof(PaymentStatus)))
+                    {
+                        <option value="@((int)status)" selected="@(filter.PaymentStatus == status)">@status</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Payment mode</label>
+                <select name="PaymentMode" class="form-select">
+                    <option value="">All</option>
+                    @foreach (PaymentMode mode in Enum.GetValues(typeof(PaymentMode)))
+                    {
+                        <option value="@((int)mode)" selected="@(filter.PaymentMode == mode)">@mode</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">From</label>
+                <input type="date" name="FromDate" value="@(filter.FromDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">To</label>
+                <input type="date" name="ToDate" value="@(filter.ToDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-lg-1">
+                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center"><i class="bi bi-funnel"></i></button>
+            </div>
+        </div>
+        <div class="mt-2">
+            <a asp-action="Index" class="sf-btn sf-btn-ghost">Reset filters</a>
+        </div>
+    </form>
+
+    <div class="sf-panel">
+        <div class="sf-panel-header">
+            <div>
+                <h5>Order list</h5>
+                <span class="sf-panel-sub">@Model.Count matching records</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Client</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Qty</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Payment</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="9" class="text-muted text-center py-4">No orders yet.</td></tr>
+                    }
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td class="sf-cell-strong">#@o.OrderNo</td>
+                            <td>@o.ClientName</td>
+                            <td>@o.ProductName</td>
+                            <td>@o.OrderDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                            <td>@o.Quantity.ToString("N0")kg</td>
+                            <td class="sf-cell-strong">₹@o.Amount.ToString("N0")</td>
+                            <td>@o.PaymentMode</td>
+                            <td>
+                                @if (o.PaymentStatus == PaymentStatus.Paid)
+                                {
+                                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Paid</span>
+                                }
+                                else if (o.PaymentStatus == PaymentStatus.Pending)
+                                {
+                                    <span class="sf-badge sf-badge-warning"><span class="sf-status-dot"></span> Pending</span>
+                                }
+                                else if (o.PaymentStatus == PaymentStatus.Partial)
+                                {
+                                    <span class="sf-badge sf-badge-info"><span class="sf-status-dot"></span> Partial</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-danger"><span class="sf-status-dot"></span> @o.PaymentStatus</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@o.Id" class="sf-btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@o.Id" method="post" onsubmit="return confirm('Delete this order?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="sf-pagination">
+            <span>Showing <strong>1</strong>–<strong>@Model.Count</strong> of <strong>@Model.Count</strong></span>
+        </div>
+    </div>
+</div>

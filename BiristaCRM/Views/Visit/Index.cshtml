@@ -1,0 +1,185 @@
+﻿@using BiristaCRM.Enums
+@using BiristaCRM.Interfaces
+@using BiristaCRM.ViewModels
+@inject ICurrentUserService CurrentUser
+@model List<VisitListItemViewModel>
+@{
+    ViewData["Title"] = "Visits";
+    int today = ViewBag.Today ?? 0;
+    int completed = ViewBag.Completed ?? 0;
+    int followUp = ViewBag.FollowUp ?? 0;
+    int newCount = ViewBag.New ?? 0;
+    var filter = ViewBag.Filter as VisitFilterViewModel ?? new VisitFilterViewModel();
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Visits</h2>
+            <p>Field visit log with follow-ups and customer responses.</p>
+        </div>
+        @if (!CurrentUser.IsSuperAdmin)
+        {
+            <div class="sf-page-actions">
+                <a asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    Log Visit
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-geo-alt"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Today</span>
+                    <h3 class="sf-stat-value">@today</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-check2-all"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Completed</span>
+                    <h3 class="sf-stat-value">@completed</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon amber"><i class="bi bi-hourglass-split"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Follow-up</span>
+                    <h3 class="sf-stat-value">@followUp</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon red"><i class="bi bi-plus-circle"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">New</span>
+                    <h3 class="sf-stat-value">@newCount</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-3">
+                <label class="form-label">Search</label>
+                <input type="text" name="Search" value="@filter.Search" class="form-control" placeholder="Client, product, or salesperson" />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Status</label>
+                <select name="Status" class="form-select">
+                    <option value="">All</option>
+                    @foreach (VisitStatus status in Enum.GetValues(typeof(VisitStatus)))
+                    {
+                        <option value="@((int)status)" selected="@(filter.Status == status)">@status</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">From</label>
+                <input type="date" name="FromDate" value="@(filter.FromDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">To</label>
+                <input type="date" name="ToDate" value="@(filter.ToDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-lg-1">
+                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center"><i class="bi bi-funnel"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="sf-panel">
+        <div class="sf-panel-header">
+            <div>
+                <h5>Visit schedule</h5>
+                <span class="sf-panel-sub">@Model.Count records</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Product</th>
+                        <th>Visit date</th>
+                        <th>Status</th>
+                        <th>Response</th>
+                        <th>Sample</th>
+                        <th>Follow-up</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="8" class="text-muted text-center py-4">No visits logged yet.</td></tr>
+                    }
+                    @foreach (var v in Model)
+                    {
+                        <tr>
+                            <td class="sf-cell-strong">@v.ClientName</td>
+                            <td>@v.ProductName</td>
+                            <td>
+                                <div>@v.VisitDate.ToLocalTime().ToString("dd MMM yyyy")</div>
+                                <small class="text-muted">@v.VisitDate.ToLocalTime().ToString("hh:mm tt")</small>
+                            </td>
+                            <td>
+                                @if (v.Status == VisitStatus.OrderBooked || v.Status == VisitStatus.Interested)
+                                {
+                                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> @v.Status</span>
+                                }
+                                else if (v.Status == VisitStatus.FollowUp || v.Status == VisitStatus.New)
+                                {
+                                    <span class="sf-badge sf-badge-warning"><span class="sf-status-dot"></span> @v.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-danger"><span class="sf-status-dot"></span> @v.Status</span>
+                                }
+                            </td>
+                            <td>@v.CustomerResponse</td>
+                            <td>
+                                @if (v.IsSampleGiven)
+                                {
+                                    <span class="sf-badge sf-badge-info"><span class="sf-status-dot"></span> Given</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-neutral"><span class="sf-status-dot"></span> No</span>
+                                }
+                            </td>
+                            <td>@(v.NextFollowUpDate?.ToLocalTime().ToString("dd MMM") ?? "—")</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@v.Id" class="sf-btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@v.Id" method="post" onsubmit="return confirm('Delete this visit?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

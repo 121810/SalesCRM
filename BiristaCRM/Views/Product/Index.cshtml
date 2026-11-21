@@ -1,0 +1,157 @@
+﻿@using BiristaCRM.Interfaces
+@using BiristaCRM.Models
+@using BiristaCRM.ViewModels
+@inject ICurrentUserService CurrentUser
+@model List<ProductMaster>
+@{
+    ViewData["Title"] = "Products";
+    var filter = ViewBag.Filter as ProductFilterViewModel ?? new ProductFilterViewModel();
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Products</h2>
+            <p>Catalog of SKUs available for field ordering.</p>
+        </div>
+        @if (CurrentUser.CanManageProducts && !CurrentUser.IsSuperAdmin)
+        {
+            <div class="sf-page-actions">
+                <a asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    Add Product
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-5">
+                <label class="form-label">Search products</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="Search" value="@filter.Search" class="form-control" placeholder="Name or product code" />
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <label class="form-label">Status</label>
+                <select name="IsActive" class="form-select">
+                    <option value="">All</option>
+                    <option value="true" selected="@(filter.IsActive == true)">Active</option>
+                    <option value="false" selected="@(filter.IsActive == false)">Inactive</option>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center">Filter</button>
+            </div>
+            <div class="col-lg-2">
+                <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-box-seam"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Matching SKUs</span>
+                    <h3 class="sf-stat-value">@Model.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-check-circle"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Active</span>
+                    <h3 class="sf-stat-value">@Model.Count(p => p.IsActive)</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon amber"><i class="bi bi-pause-circle"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Inactive</span>
+                    <h3 class="sf-stat-value">@Model.Count(p => !p.IsActive)</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-panel">
+        <div class="sf-panel-header">
+            <div>
+                <h5>Product catalog</h5>
+                <span class="sf-panel-sub">@Model.Count products</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Code</th>
+                        <th>Unit</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-muted text-center py-4">No products found.</td></tr>
+                    }
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="sf-avatar sm"><i class="bi bi-box"></i></div>
+                                    <span class="sf-cell-strong">@p.ProductName</span>
+                                </div>
+                            </td>
+                            <td><code>@(p.ProductCode ?? "—")</code></td>
+                            <td>@(p.Unit ?? "—")</td>
+                            <td class="sf-cell-strong">₹@p.Price.ToString("N0")</td>
+                            <td>
+                                @if (p.IsActive)
+                                {
+                                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Active</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-neutral"><span class="sf-status-dot"></span> Inactive</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (CurrentUser.CanManageProducts && !CurrentUser.IsSuperAdmin)
+                                {
+                                    <div class="d-inline-flex gap-1">
+                                        <a asp-action="Edit" asp-route-id="@p.Id" class="sf-btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>
+                                        <form asp-action="Delete" asp-route-id="@p.Id" method="post" onsubmit="return confirm('Delete this product?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+/* SalesFlow CRM — Base */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+    min-height: 100%;
+    font-family: var(--sf-font);
+    font-size: var(--sf-font-base);
+    line-height: 1.55;
+    color: var(--sf-text);
+    background: var(--sf-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--sf-primary);
+    text-decoration: none;
+    transition: color var(--sf-transition);
+}
+
+a:hover {
+    color: var(--sf-primary-hover);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--sf-text);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+/* Bootstrap primary override */
+.btn-primary {
+    --bs-btn-bg: var(--sf-primary);
+    --bs-btn-border-color: var(--sf-primary);
+    --bs-btn-hover-bg: var(--sf-primary-hover);
+    --bs-btn-hover-border-color: var(--sf-primary-hover);
+    --bs-btn-active-bg: var(--sf-primary-dark);
+    --bs-btn-active-border-color: var(--sf-primary-dark);
+    --bs-btn-focus-shadow-rgb: 13, 148, 136;
+    font-weight: 500;
+    font-size: var(--sf-font-md);
+    border-radius: var(--sf-radius-sm);
+    padding: 0.6rem 1.15rem;
+}
+
+.btn-outline-secondary {
+    border-radius: var(--sf-radius-sm);
+    font-weight: 500;
+    font-size: var(--sf-font-md);
+    color: var(--sf-text-secondary);
+    border-color: var(--sf-border-strong);
+    padding: 0.6rem 1.15rem;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--sf-surface-muted);
+    color: var(--sf-text);
+    border-color: var(--sf-border-strong);
+}
+
+.btn-light {
+    border-radius: var(--sf-radius-sm);
+    font-weight: 500;
+    font-size: var(--sf-font-md);
+}
+
+.btn-danger {
+    border-radius: var(--sf-radius-sm);
+    font-weight: 500;
+    font-size: var(--sf-font-md);
+}
+
+.form-control,
+.form-select {
+    border-color: var(--sf-border);
+    border-radius: var(--sf-radius-sm);
+    padding: 0.65rem 0.95rem;
+    font-size: 1rem;
+    color: var(--sf-text);
+    background: var(--sf-surface);
+    min-height: 46px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--sf-primary);
+    box-shadow: 0 0 0 3px var(--sf-primary-ring);
+}
+
+.form-label {
+    font-size: var(--sf-font-md);
+    font-weight: 500;
+    color: var(--sf-text-secondary);
+    margin-bottom: 0.4rem;
+}
+
+.form-text,
+.small,
+small {
+    font-size: var(--sf-font-sm);
+}
+
+.input-group-text {
+    background: var(--sf-surface-muted);
+    border-color: var(--sf-border);
+    color: var(--sf-muted);
+    font-size: 1rem;
+}
+
+.page-link {
+    color: var(--sf-text-secondary);
+    border-color: var(--sf-border);
+    font-size: var(--sf-font-md);
+    padding: 0.5rem 0.85rem;
+}
+
+.page-item.active .page-link {
+    background: var(--sf-primary);
+    border-color: var(--sf-primary);
+}
+
+.modal-content {
+    border: 1px solid var(--sf-border);
+    border-radius: var(--sf-radius-lg);
+    box-shadow: var(--sf-shadow-md);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--sf-border);
+}
+
+.modal-title {
+    font-size: 1.2rem;
+}
+
+.alert {
+    font-size: var(--sf-font-md);
+    border-radius: var(--sf-radius);
+}
+
+.text-danger {
+    font-size: var(--sf-font-sm);
+}
+
+/* Slightly roomier Bootstrap gutters across CRM forms & grids */
+.row.g-3 {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+.row.g-2 {
+    --bs-gutter-x: 0.85rem;
+    --bs-gutter-y: 0.85rem;
+}

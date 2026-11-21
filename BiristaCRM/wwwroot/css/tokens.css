@@ -1,0 +1,49 @@
+/* SalesFlow CRM — Design Tokens */
+:root {
+    --sf-bg: #F1F4F6;
+    --sf-surface: #FFFFFF;
+    --sf-surface-muted: #F7F9FA;
+    --sf-border: #E2E8F0;
+    --sf-border-strong: #CBD5E1;
+
+    --sf-text: #0F172A;
+    --sf-text-secondary: #334155;
+    --sf-muted: #64748B;
+    --sf-muted-light: #94A3B8;
+
+    --sf-primary: #0D9488;
+    --sf-primary-hover: #0F766E;
+    --sf-primary-dark: #115E59;
+    --sf-primary-soft: rgba(13, 148, 136, 0.12);
+    --sf-primary-ring: rgba(13, 148, 136, 0.28);
+
+    --sf-success: #059669;
+    --sf-success-soft: rgba(5, 150, 105, 0.12);
+    --sf-warning: #D97706;
+    --sf-warning-soft: rgba(217, 119, 6, 0.12);
+    --sf-danger: #DC2626;
+    --sf-danger-soft: rgba(220, 38, 38, 0.12);
+    --sf-info: #0284C7;
+    --sf-info-soft: rgba(2, 132, 199, 0.12);
+
+    --sf-sidebar-width: 272px;
+    --sf-sidebar-collapsed: 80px;
+    --sf-navbar-height: 68px;
+
+    --sf-radius: 12px;
+    --sf-radius-sm: 8px;
+    --sf-radius-lg: 16px;
+
+    --sf-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+    --sf-shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+
+    --sf-font: "DM Sans", system-ui, sans-serif;
+    --sf-font-display: "Source Serif 4", Georgia, serif;
+
+    --sf-font-base: 16px;
+    --sf-font-sm: 0.875rem;
+    --sf-font-md: 0.9375rem;
+    --sf-font-lg: 1.0625rem;
+
+    --sf-transition: 0.2s ease;
+}

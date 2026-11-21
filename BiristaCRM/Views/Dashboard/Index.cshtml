@@ -1,0 +1,206 @@
+﻿@model BiristaCRM.ViewModels.DashboardViewModel
+@using BiristaCRM.Interfaces
+@inject ICurrentUserService CurrentUser
+@{
+    ViewData["Title"] = "Dashboard";
+    var revenueDisplay = Model.RevenueMtd >= 100000
+        ? $"₹{(Model.RevenueMtd / 100000m):0.##}L"
+        : $"₹{Model.RevenueMtd:N0}";
+}
+
+<div class="sf-dashboard sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>@Model.UserName</h2>
+            <p>@(CurrentUser.IsSuperAdmin ? "Platform overview across all tenant companies." : "Live overview of clients, visits, and revenue.")</p>
+        </div>
+        @if (!CurrentUser.IsSuperAdmin)
+        {
+            <div class="sf-quick-actions">
+                <a asp-controller="Client" asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-person-plus"></i>
+                    Add Client
+                </a>
+                <a asp-controller="Visit" asp-action="Create" class="sf-btn sf-btn-ghost">
+                    <i class="bi bi-geo-alt"></i>
+                    Log Visit
+                </a>
+                <a asp-controller="Order" asp-action="Create" class="sf-btn sf-btn-ghost">
+                    <i class="bi bi-cart-plus"></i>
+                    New Order
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="sf-quick-actions">
+                <a asp-controller="Company" asp-action="Index" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-building"></i>
+                    Manage Companies
+                </a>
+                <a asp-controller="User" asp-action="Create" class="sf-btn sf-btn-ghost">
+                    <i class="bi bi-person-plus"></i>
+                    Invite Admin
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row g-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-people"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Total Clients</span>
+                    <h3 class="sf-stat-value" data-count="@Model.TotalClients">@Model.TotalClients</h3>
+                    <span class="sf-stat-meta"><i class="bi bi-arrow-up-short"></i> +@Model.ClientsThisMonth this month</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-geo-alt"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Today's Visits</span>
+                    <h3 class="sf-stat-value" data-count="@Model.TodaysVisits">@Model.TodaysVisits</h3>
+                    <span class="sf-stat-meta">
+                        <span class="sf-live-dot" style="width:6px;height:6px;display:inline-block;"></span>
+                        @Model.VisitsInProgress in progress
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon amber"><i class="bi bi-cart3"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Open Orders</span>
+                    <h3 class="sf-stat-value" data-count="@Model.OpenOrders">@Model.OpenOrders</h3>
+                    <span class="sf-stat-meta"><i class="bi bi-arrow-up-short"></i> +@Model.OrdersToday today</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon red"><i class="bi bi-currency-rupee"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Revenue (MTD)</span>
+                    <h3 class="sf-stat-value">@revenueDisplay</h3>
+                    <span class="sf-stat-meta">This month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-lg-8">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <div>
+                        <h5>Monthly Sales</h5>
+                        <span class="sf-panel-sub">Revenue trend for the last 7 months</span>
+                    </div>
+                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Live</span>
+                </div>
+                <div class="sf-panel-body">
+                    <div class="sf-chart-wrap">
+                        <canvas id="salesChart"
+                                data-labels='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels))'
+                                data-values='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartValues))'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <h5>Recent Activity</h5>
+                    <a asp-controller="Report" asp-action="Index">View all</a>
+                </div>
+                <div class="sf-panel-body">
+                    @if (!Model.RecentActivity.Any())
+                    {
+                        <p class="text-muted mb-0">No recent activity.</p>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.RecentActivity)
+                        {
+                            <div class="sf-activity-item">
+                                <span class="sf-activity-dot"></span>
+                                <div>
+                                    <p>@item.Text</p>
+                                    <time>@item.TimeAgo</time>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-lg-6">
+            <div class="sf-panel">
+                <div class="sf-panel-header">
+                    <h5>Today's Follow-ups</h5>
+                    <a asp-controller="Visit" asp-action="Index">View all</a>
+                </div>
+                <div class="sf-panel-body">
+                    @if (!Model.TodaysFollowUps.Any())
+                    {
+                        <p class="text-muted mb-0">No follow-ups scheduled for today.</p>
+                    }
+                    else
+                    {
+                        foreach (var f in Model.TodaysFollowUps)
+                        {
+                            <div class="sf-list-item">
+                                <div>
+                                    <strong>@f.ClientName</strong>
+                                    <small>@f.Detail</small>
+                                </div>
+                                <span class="sf-badge @f.BadgeClass"><span class="sf-status-dot"></span> @f.StatusLabel</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="sf-panel">
+                <div class="sf-panel-header">
+                    <h5>Recent Orders</h5>
+                    <a asp-controller="Order" asp-action="Index">View all</a>
+                </div>
+                <div class="sf-panel-body">
+                    @if (!Model.RecentOrders.Any())
+                    {
+                        <p class="text-muted mb-0">No orders yet.</p>
+                    }
+                    else
+                    {
+                        foreach (var o in Model.RecentOrders)
+                        {
+                            <div class="sf-list-item">
+                                <div>
+                                    <strong>#@o.OrderNo</strong>
+                                    <small>@o.ClientName · @o.PaymentMode</small>
+                                </div>
+                                <strong class="text-success">₹@o.Amount.ToString("N0")</strong>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

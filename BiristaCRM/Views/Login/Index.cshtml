@@ -1,0 +1,62 @@
+﻿@using BiristaCRM.ViewModels
+@model LoginViewModel
+@{
+    Layout = "_LoginLayout";
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="sf-login-page">
+    <div class="sf-login-bg" aria-hidden="true"></div>
+
+    <main class="sf-login-shell">
+        <section class="sf-login-card" aria-labelledby="sf-login-heading">
+            <header class="sf-login-card-header">
+                <h1 id="sf-login-heading">Sign in</h1>
+                <p>Access your sales workspace securely.</p>
+            </header>
+
+            <form method="post" asp-controller="Login" asp-action="Index" class="sf-login-form" autocomplete="on">
+                <div asp-validation-summary="ModelOnly" class="text-danger sf-login-validation"></div>
+
+                <div class="sf-login-field">
+                    <label class="form-label" asp-for="Email">Email</label>
+                    <input asp-for="Email"
+                           class="form-control"
+                           placeholder="you@company.com"
+                           autocomplete="username"
+                           inputmode="email"
+                           autofocus />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="sf-login-field">
+                    <label class="form-label" asp-for="Password">Password</label>
+                    <div class="sf-password-wrap sf-login-input">
+                        <input asp-for="Password"
+                               class="form-control"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="sf-login-meta">
+                    <label class="sf-login-remember">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="sf-btn sf-btn-primary sf-login-submit">
+                    Sign in
+                </button>
+            </form>
+        </section>
+
+        <p class="sf-login-footnote">Protected workspace &middot; SalesFlow CRM</p>
+    </main>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

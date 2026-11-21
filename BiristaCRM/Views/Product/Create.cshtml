@@ -1,0 +1,68 @@
+@model BiristaCRM.ViewModels.CreateProductViewModel
+@{
+    ViewData["Title"] = Model.Id.HasValue ? "Edit Product" : "Add Product";
+    var action = Model.Id.HasValue ? "Edit" : "Create";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <a asp-action="Index" class="sf-back-link"><i class="bi bi-arrow-left"></i> Back to products</a>
+            <h2>@ViewData["Title"]</h2>
+            <p>Define SKU details for your company catalog.</p>
+        </div>
+    </div>
+
+    <form asp-action="@action" method="post" autocomplete="off">
+        @if (Model.Id.HasValue)
+        {
+            <input type="hidden" name="id" value="@Model.Id" />
+        }
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="sf-panel">
+            <div class="sf-panel-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="ProductName" class="form-label"></label>
+                        <input asp-for="ProductName" class="form-control" />
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ProductCode" class="form-label"></label>
+                        <input asp-for="ProductCode" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Unit" class="form-label"></label>
+                        <input asp-for="Unit" class="form-control" placeholder="Kg / Ltr / Pack" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Price" class="form-label"></label>
+                        <input asp-for="Price" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Active</label>
+                        <div class="sf-switch-row">
+                            <label class="sf-switch">
+                                <input asp-for="IsActive" />
+                                <span class="sf-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sf-form-footer">
+            <a asp-action="Index" class="sf-btn sf-btn-ghost">Cancel</a>
+            <button type="submit" class="sf-btn sf-btn-primary"><i class="bi bi-check-lg"></i> Save product</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

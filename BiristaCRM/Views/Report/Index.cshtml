@@ -1,0 +1,177 @@
+@using BiristaCRM.Interfaces
+@model BiristaCRM.ViewModels.ReportViewModel
+@inject ICurrentUserService CurrentUser
+@{
+    ViewData["Title"] = "Reports";
+    var collectedDisplay = Model.CollectedAmount >= 100000
+        ? $"₹{(Model.CollectedAmount / 100000m):0.##}L"
+        : $"₹{Model.CollectedAmount:N0}";
+    var hasDateFilter = Model.Filter.FromDate.HasValue || Model.Filter.ToDate.HasValue;
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Reports</h2>
+            <p>Performance snapshots across sales, visits, and collections.</p>
+        </div>
+    </div>
+
+    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-3">
+                <label class="form-label">From date</label>
+                <input type="date" name="FromDate" class="form-control" value="@(Model.Filter.FromDate?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-lg-3">
+                <label class="form-label">To date</label>
+                <input type="date" name="ToDate" class="form-control" value="@(Model.Filter.ToDate?.ToString("yyyy-MM-dd"))" />
+            </div>
+            @if (!CurrentUser.IsSalesPerson)
+            {
+                <div class="col-lg-3">
+                    <label class="form-label">Sales person</label>
+                    <select name="SalesPersonId" class="form-select">
+                        <option value="">All sales persons</option>
+                        @foreach (var sp in Model.SalesPeople)
+                        {
+                            <option value="@sp.Id" selected="@(Model.Filter.SalesPersonId == sp.Id)">@sp.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            <div class="col-lg-1">
+                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center"><i class="bi bi-funnel"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-graph-up"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Conversion rate</span>
+                    <h3 class="sf-stat-value">@Model.ConversionRate%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-currency-rupee"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Collected</span>
+                    <h3 class="sf-stat-value">@collectedDisplay</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon amber"><i class="bi bi-geo-alt"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Visit completion</span>
+                    <h3 class="sf-stat-value">@Model.VisitCompletionRate%</h3>
+                    <span class="sf-stat-meta">@Model.TotalVisits visits</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon blue"><i class="bi bi-people"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">@(hasDateFilter ? "New clients" : "New clients (MTD)")</span>
+                    <h3 class="sf-stat-value">@Model.NewClientsThisMonth</h3>
+                    <span class="sf-stat-meta">@Model.TotalOrders orders</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="sf-panel">
+                <div class="sf-panel-header">
+                    <div>
+                        <h5>Revenue by month</h5>
+                        <span class="sf-panel-sub">Filtered period</span>
+                    </div>
+                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Live</span>
+                </div>
+                <div class="sf-panel-body">
+                    <div class="sf-chart-wrap">
+                        <canvas id="reportChart"
+                                data-labels='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels))'
+                                data-values='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartValues))'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <h5>Top performers</h5>
+                </div>
+                <div class="sf-panel-body">
+                    @if (!Model.TopPerformers.Any())
+                    {
+                        <p class="text-muted mb-0">No salesperson data yet.</p>
+                    }
+                    else
+                    {
+                        foreach (var p in Model.TopPerformers)
+                        {
+                            <div class="sf-list-item">
+                                <div>
+                                    <strong>@p.Name</strong>
+                                    <small>@p.VisitCount visits · @p.OrderCount orders</small>
+                                </div>
+                                <span class="sf-badge @(p.Rank == 1 ? "sf-badge-success" : p.Rank == 2 ? "sf-badge-info" : "sf-badge-neutral")">#@p.Rank</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const canvas = document.getElementById("reportChart");
+            if (!canvas || typeof Chart === "undefined") return;
+            let labels = [];
+            let values = [];
+            try {
+                labels = JSON.parse(canvas.dataset.labels || "[]");
+                values = JSON.parse(canvas.dataset.values || "[]");
+            } catch (e) {}
+            const primary = getComputedStyle(document.documentElement).getPropertyValue("--sf-primary").trim() || "#0D9488";
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Revenue",
+                        data: values,
+                        backgroundColor: "rgba(13, 148, 136, 0.65)",
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: "#94A3B8" } },
+                        y: { grid: { color: "#F1F5F9" }, ticks: { color: "#94A3B8" }, beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,121 @@
+﻿@using BiristaCRM.Enums
+@using BiristaCRM.Interfaces
+@inject ICurrentUserService CurrentUser
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    bool IsActive(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase);
+
+    string RoleLabel() => CurrentUser.Role switch
+    {
+        UserRole.SuperAdmin => "Super Admin",
+        UserRole.Admin => "Company Admin",
+        UserRole.SalesManager => "Sales Manager",
+        _ => "Sales Person"
+    };
+}
+
+<aside class="sf-sidebar" id="sfSidebar">
+    <a asp-controller="Dashboard" asp-action="Index" class="sf-sidebar-brand">
+        <div class="sf-brand-mark">S</div>
+        <div class="sf-brand-text">
+            <span class="sf-brand-name">SalesFlow</span>
+            <span class="sf-brand-tag">Enterprise CRM</span>
+        </div>
+    </a>
+
+    <div class="sf-sidebar-body">
+        <p class="sf-menu-label">Main</p>
+        <ul class="sf-menu">
+            <li>
+                <a asp-controller="Dashboard" asp-action="Index"
+                   class="sf-menu-link @(IsActive("Dashboard") ? "active" : "")">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            @if (!CurrentUser.IsSuperAdmin)
+            {
+                <li>
+                    <a asp-controller="Client" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Client") ? "active" : "")">
+                        <i class="bi bi-people"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Product" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Product") ? "active" : "")">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Visit" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Visit") ? "active" : "")">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Visits</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Order" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Order") ? "active" : "")">
+                        <i class="bi bi-cart3"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Report" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Report") ? "active" : "")">
+                        <i class="bi bi-bar-chart"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+            }
+
+            @if (CurrentUser.CanManageUsers || CurrentUser.IsSuperAdmin)
+            {
+                <li>
+                    <a asp-controller="User" asp-action="Index"
+                       class="sf-menu-link @(IsActive("User") ? "active" : "")">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+            }
+
+            @if (CurrentUser.CanManageCompany || CurrentUser.IsSuperAdmin)
+            {
+                <li>
+                    <a asp-controller="Company" asp-action="Index"
+                       class="sf-menu-link @(IsActive("Company") ? "active" : "")">
+                        <i class="bi bi-building"></i>
+                        <span>Company</span>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <p class="sf-menu-label">System</p>
+        <ul class="sf-menu">
+            <li>
+                <a asp-controller="Settings" asp-action="Index"
+                   class="sf-menu-link @(IsActive("Settings") ? "active" : "")">
+                    <i class="bi bi-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sf-sidebar-footer">
+        <div class="sf-sidebar-user">
+            <img src="~/images/avtar.png" alt="User" />
+            <div>
+                <h6>@(string.IsNullOrWhiteSpace(CurrentUser.FullName) ? "User" : CurrentUser.FullName.Split(' ')[0])</h6>
+                <small>@RoleLabel()</small>
+            </div>
+        </div>
+    </div>
+</aside>

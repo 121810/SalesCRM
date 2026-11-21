@@ -1,0 +1,28 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-panel" style="max-width:560px;margin:2rem auto;">
+        <div class="sf-panel-body text-center py-5">
+            <div class="sf-stat-icon red mx-auto mb-3" style="width:56px;height:56px;font-size:1.5rem;">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <h2 class="mb-2">Something went wrong</h2>
+            <p class="text-muted mb-4">An error occurred while processing your request.</p>
+
+            @if (Model.ShowRequestId)
+            {
+                <p class="mb-4">
+                    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                </p>
+            }
+
+            <a asp-controller="Dashboard" asp-action="Index" class="sf-btn sf-btn-primary">
+                <i class="bi bi-house"></i>
+                Back to dashboard
+            </a>
+        </div>
+    </div>
+</div>

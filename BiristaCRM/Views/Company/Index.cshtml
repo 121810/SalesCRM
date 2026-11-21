@@ -1,0 +1,240 @@
+﻿@using BiristaCRM.ViewModels
+@model CompanyIndexViewModel
+@{
+    ViewData["Title"] = "Company";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Company</h2>
+            <p>@(Model.IsSuperAdmin ? "Create and manage tenant companies." : "Organization profile for this CRM workspace.")</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (Model.IsSuperAdmin)
+    {
+        <div class="sf-panel mb-3">
+            <div class="sf-panel-header">
+                <h5>Create company + admin</h5>
+            </div>
+            <div class="sf-panel-body">
+                <form asp-action="Create" method="post" autocomplete="off">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Company name</label>
+                            <input name="CompanyName" class="form-control" required value="@Model.CreateForm.CompanyName" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Owner name</label>
+                            <input name="OwnerName" class="form-control" required value="@Model.CreateForm.OwnerName" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">City</label>
+                            <input name="City" class="form-control" required value="@Model.CreateForm.City" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Mobile</label>
+                            <input name="Mobile" class="form-control" required maxlength="10" value="@Model.CreateForm.Mobile" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Email</label>
+                            <input name="Email" type="email" class="form-control" required value="@Model.CreateForm.Email" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Address</label>
+                            <input name="Address" class="form-control" required value="@Model.CreateForm.Address" />
+                        </div>
+                        <input type="hidden" name="IsActive" value="true" />
+                        <div class="col-12"><hr /></div>
+                        <div class="col-md-3">
+                            <label class="form-label">Admin name</label>
+                            <input name="AdminFullName" class="form-control" required value="@Model.CreateForm.AdminFullName" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Admin email</label>
+                            <input name="AdminEmail" type="email" class="form-control" required value="@Model.CreateForm.AdminEmail" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Admin password</label>
+                            <input name="AdminPassword" class="form-control" type="password" required minlength="6" maxlength="100" placeholder="Min 6 characters" />
+                            <small class="text-muted">Min 6 characters. Letters, numbers, and symbols (@@, #, etc.) are allowed.</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Admin mobile</label>
+                            <input name="AdminMobile" class="form-control" required maxlength="10" value="@Model.CreateForm.AdminMobile" />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="sf-btn sf-btn-primary"><i class="bi bi-plus-lg"></i> Create company</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="sf-panel">
+            <div class="sf-panel-header">
+                <h5>All companies</h5>
+                <span class="sf-panel-sub">@Model.Companies.Count tenants</span>
+            </div>
+            <form method="get" asp-action="Index" class="sf-toolbar mb-0 border-0 rounded-0" data-sf-search>
+                <div class="row g-3 align-items-end px-3 pb-3">
+                    <div class="col-lg-5">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Company, owner, city, or email" />
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">Status</label>
+                        <select name="isActive" class="form-select">
+                            <option value="">All</option>
+                            <option value="true" selected="@(Model.IsActive == true)">Active</option>
+                            <option value="false" selected="@(Model.IsActive == false)">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center">Filter</button>
+                    </div>
+                    <div class="col-lg-2">
+                        <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table class="sf-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Owner</th>
+                            <th>City</th>
+                            <th>Users</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Companies.Any())
+                        {
+                            <tr><td colspan="6" class="text-muted text-center py-4">No companies yet.</td></tr>
+                        }
+                        @foreach (var c in Model.Companies)
+                        {
+                            <tr>
+                                <td class="sf-cell-strong">@c.CompanyName</td>
+                                <td>@c.OwnerName</td>
+                                <td>@c.City</td>
+                                <td>@c.UserCount</td>
+                                <td>
+                                    @if (c.IsActive)
+                                    {
+                                        <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sf-badge sf-badge-danger"><span class="sf-status-dot"></span> Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this company?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@c.Id" />
+                                        <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else if (Model.CurrentCompany != null)
+    {
+        var company = Model.CurrentCompany;
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="@company.Id" name="Id" />
+            <div class="sf-profile-banner">
+                <div class="sf-brand-mark" style="width:64px;height:64px;font-size:1.4rem;border-radius:14px;">@(company.CompanyName.Substring(0, 1))</div>
+                <div>
+                    <h3>@company.CompanyName</h3>
+                    <p>Owner: <strong>@company.OwnerName</strong> · @company.City</p>
+                    <div class="mt-2">
+                        <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Active tenant</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="sf-panel">
+                        <div class="sf-panel-header"><h5>Company details</h5></div>
+                        <div class="sf-panel-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Company name</label>
+                                    <input class="form-control" name="CompanyName" value="@company.CompanyName" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Owner name</label>
+                                    <input class="form-control" name="OwnerName" value="@company.OwnerName" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Mobile</label>
+                                    <input class="form-control" name="Mobile" value="@company.Mobile" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-control" name="Email" value="@company.Email" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">City</label>
+                                    <input class="form-control" name="City" value="@company.City" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="IsActive">
+                                        <option value="true" selected="@company.IsActive">Active</option>
+                                        <option value="false" selected="@(!company.IsActive)">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    <textarea class="form-control" name="Address" rows="3">@company.Address</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="sf-panel h-100">
+                        <div class="sf-panel-header"><h5>Workspace summary</h5></div>
+                        <div class="sf-panel-body">
+                            <div class="sf-info-row"><span>Users</span><strong>@company.UserCount seats</strong></div>
+                            <div class="sf-info-row"><span>Clients</span><strong>@company.ClientCount</strong></div>
+                            <div class="sf-info-row"><span>Products</span><strong>@company.ProductCount SKUs</strong></div>
+                            <div class="sf-info-row"><span>Created</span><strong>@company.CreatedAt.ToString("dd MMM yyyy")</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sf-form-footer">
+                <span></span>
+                <button type="submit" class="sf-btn sf-btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-warning">No company profile found for your account.</div>
+    }
+</div>

@@ -1,0 +1,189 @@
+﻿@using BiristaCRM.Enums
+@using BiristaCRM.Interfaces
+@using BiristaCRM.Models
+@using BiristaCRM.ViewModels
+@inject ICurrentUserService CurrentUser
+@model List<UserMaster>
+@{
+    ViewData["Title"] = "Users";
+    var filter = ViewBag.Filter as UserFilterViewModel ?? new UserFilterViewModel();
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Users</h2>
+            <p>Team members and role access across the CRM.</p>
+        </div>
+        @if (CurrentUser.CanManageUsers)
+        {
+            <div class="sf-page-actions">
+                <a asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-person-plus"></i>
+                    Invite User
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="Search" value="@filter.Search" class="form-control" placeholder="Name, email, or mobile" />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Role</label>
+                <select name="Role" class="form-select">
+                    <option value="">All roles</option>
+                    @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                    {
+                        if (CurrentUser.IsSuperAdmin || role != UserRole.SuperAdmin)
+                        {
+                            <option value="@((int)role)" selected="@(filter.Role == role)">@role</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Status</label>
+                <select name="IsActive" class="form-select">
+                    <option value="">All</option>
+                    <option value="true" selected="@(filter.IsActive == true)">Active</option>
+                    <option value="false" selected="@(filter.IsActive == false)">Inactive</option>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center">Filter</button>
+            </div>
+            <div class="col-lg-2">
+                <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon teal"><i class="bi bi-people"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Matching users</span>
+                    <h3 class="sf-stat-value">@Model.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon green"><i class="bi bi-person-check"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Active</span>
+                    <h3 class="sf-stat-value">@Model.Count(u => u.IsActive)</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sf-stat-card">
+                <div class="sf-stat-icon blue"><i class="bi bi-briefcase"></i></div>
+                <div class="sf-stat-body">
+                    <span class="sf-stat-label">Sales reps</span>
+                    <h3 class="sf-stat-value">@Model.Count(u => u.Role == UserRole.SalesPerson)</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-panel">
+        <div class="sf-panel-header">
+            <div>
+                <h5>Team directory</h5>
+                <span class="sf-panel-sub">@Model.Count users</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-muted text-center py-4">No users found.</td></tr>
+                    }
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="sf-avatar">@(string.IsNullOrEmpty(u.FullName) ? "?" : u.FullName.Substring(0, 1))</div>
+                                    <span class="sf-cell-strong">@u.FullName</span>
+                                </div>
+                            </td>
+                            <td>@u.Email</td>
+                            <td>@u.Mobile</td>
+                            <td>
+                                @if (u.Role == UserRole.SuperAdmin || u.Role == UserRole.Admin)
+                                {
+                                    <span class="sf-badge sf-badge-primary"><span class="sf-status-dot"></span> @u.Role</span>
+                                }
+                                else if (u.Role == UserRole.SalesManager)
+                                {
+                                    <span class="sf-badge sf-badge-info"><span class="sf-status-dot"></span> Manager</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-neutral"><span class="sf-status-dot"></span> Sales</span>
+                                }
+                            </td>
+                            <td>
+                                @if (u.IsActive)
+                                {
+                                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Active</span>
+                                }
+                                else
+                                {
+                                    <span class="sf-badge sf-badge-danger"><span class="sf-status-dot"></span> Inactive</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (CurrentUser.CanManageUsers && u.Id != CurrentUser.UserId && u.Role != UserRole.SuperAdmin)
+                                {
+                                    <div class="d-inline-flex gap-1">
+                                        <form asp-action="ToggleActive" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <input type="hidden" name="isActive" value="@(!u.IsActive)" />
+                                            <button type="submit" class="sf-btn-icon" title="@(u.IsActive ? "Disable" : "Enable")">
+                                                <i class="bi bi-slash-circle"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this user?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <button type="submit" class="sf-btn-icon danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

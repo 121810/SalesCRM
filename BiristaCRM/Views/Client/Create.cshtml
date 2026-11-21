@@ -1,0 +1,147 @@
+﻿@using BiristaCRM.Enums
+@model BiristaCRM.ViewModels.CreateClientViewModel
+
+@{
+    ViewData["Title"] = "Create Client";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <a asp-action="Index" class="sf-back-link">
+                <i class="bi bi-arrow-left"></i>
+                Back to clients
+            </a>
+            <h2>Create Client</h2>
+            <p>Capture business, contact, and status details for a new account.</p>
+        </div>
+    </div>
+
+    <form asp-action="Create" asp-controller="Client" method="post" autocomplete="off">
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="sf-panel h-100">
+                    <div class="sf-panel-body">
+                        <div class="sf-form-section-title">
+                            <i class="bi bi-building"></i>
+                            Business information
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BusinessName" class="form-label"></label>
+                            <span class="text-danger">*</span>
+                            <input asp-for="BusinessName" class="form-control" placeholder="Enter business name" />
+                            <span asp-validation-for="BusinessName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OwnerName" class="form-label"></label>
+                            <span class="text-danger">*</span>
+                            <input asp-for="OwnerName" class="form-control" placeholder="Enter owner name" />
+                            <span asp-validation-for="OwnerName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GSTNo" class="form-label"></label>
+                            <input asp-for="GSTNo" class="form-control" placeholder="Enter GST number" />
+                            <span asp-validation-for="GSTNo" class="text-danger"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter email address" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="sf-panel h-100">
+                    <div class="sf-panel-body">
+                        <div class="sf-form-section-title">
+                            <i class="bi bi-telephone"></i>
+                            Contact &amp; location
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MobileNumber" class="form-label"></label>
+                            <span class="text-danger">*</span>
+                            <input asp-for="MobileNumber" class="form-control" maxlength="10" placeholder="Enter mobile number" />
+                            <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Area" class="form-label"></label>
+                            <input asp-for="Area" class="form-control" placeholder="Enter area" />
+                            <span asp-validation-for="Area" class="text-danger"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Address" class="form-label"></label>
+                            <textarea asp-for="Address" class="form-control" rows="5" placeholder="Enter full address"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="sf-panel">
+                    <div class="sf-panel-body">
+                        <div class="sf-form-section-title">
+                            <i class="bi bi-sliders"></i>
+                            Status
+                        </div>
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-lg-6">
+                                <label asp-for="Status" class="form-label"></label>
+                                <span class="text-danger">*</span>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="">Select status</option>
+                                    @foreach (ClientStatus status in Enum.GetValues(typeof(ClientStatus)))
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label">Client active</label>
+                                <div class="sf-switch-row">
+                                    <label class="sf-switch">
+                                        <input asp-for="IsActive" />
+                                        <span class="sf-slider"></span>
+                                    </label>
+                                    <span>Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sf-form-footer">
+            <a asp-action="Index" class="sf-btn sf-btn-ghost">
+                <i class="bi bi-arrow-left"></i>
+                Cancel
+            </a>
+            <div class="d-flex gap-2">
+                <button type="reset" class="sf-btn sf-btn-ghost">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Reset
+                </button>
+                <button type="submit" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-check-lg"></i>
+                    Save client
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

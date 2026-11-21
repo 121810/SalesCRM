@@ -1,0 +1,151 @@
+﻿@using BiristaCRM.Enums
+@model BiristaCRM.ViewModels.ClientDetailsViewModel
+@{
+    ViewData["Title"] = "Client Details";
+    var client = Model.Client;
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <a asp-action="Index" class="sf-back-link">
+                <i class="bi bi-arrow-left"></i>
+                Back to clients
+            </a>
+            <h2>Client profile</h2>
+            <p>Complete account information and recent activity.</p>
+        </div>
+        <div class="sf-page-actions">
+            <a asp-action="Edit" asp-route-id="@client.Id" class="sf-btn sf-btn-primary">
+                <i class="bi bi-pencil"></i>
+                Edit client
+            </a>
+        </div>
+    </div>
+
+    <div class="sf-profile-banner">
+        <div class="sf-avatar lg">
+            @client.BusinessName.Substring(0, 1).ToUpper()
+        </div>
+        <div class="flex-grow-1">
+            <h3>@client.BusinessName</h3>
+            <p>Owner: <strong>@client.OwnerName</strong> · @client.Area</p>
+            <div class="d-flex gap-2 mt-2 flex-wrap">
+                @switch (client.Status)
+                {
+                    case ClientStatus.Prospect:
+                        <span class="sf-badge sf-badge-warning"><span class="sf-status-dot"></span> Prospect</span>
+                        break;
+                    case ClientStatus.Customer:
+                        <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Customer</span>
+                        break;
+                    case ClientStatus.Inactive:
+                        <span class="sf-badge sf-badge-danger"><span class="sf-status-dot"></span> Inactive</span>
+                        break;
+                }
+                @if (client.IsActive)
+                {
+                    <span class="sf-badge sf-badge-success"><span class="sf-status-dot"></span> Active</span>
+                }
+                else
+                {
+                    <span class="sf-badge sf-badge-neutral"><span class="sf-status-dot"></span> Inactive</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <h5><i class="bi bi-building me-2 text-muted"></i>Business</h5>
+                </div>
+                <div class="sf-panel-body">
+                    <div class="sf-info-row"><span>Business name</span><strong>@client.BusinessName</strong></div>
+                    <div class="sf-info-row"><span>Owner name</span><strong>@client.OwnerName</strong></div>
+                    <div class="sf-info-row"><span>GST number</span><strong>@(string.IsNullOrWhiteSpace(client.GSTNo) ? "—" : client.GSTNo)</strong></div>
+                    <div class="sf-info-row"><span>Email</span><strong>@(string.IsNullOrWhiteSpace(client.Email) ? "—" : client.Email)</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <h5><i class="bi bi-telephone me-2 text-muted"></i>Contact</h5>
+                </div>
+                <div class="sf-panel-body">
+                    <div class="sf-info-row"><span>Mobile</span><strong>@client.MobileNumber</strong></div>
+                    <div class="sf-info-row"><span>Area</span><strong>@client.Area</strong></div>
+                    <div class="sf-info-row"><span>Address</span><strong>@client.Address</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="sf-panel">
+                <div class="sf-panel-header"><h5>Account timeline</h5></div>
+                <div class="sf-panel-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="sf-info-row flex-column align-items-start gap-1 border-0 p-0">
+                                <span>Status</span><strong>@client.Status</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="sf-info-row flex-column align-items-start gap-1 border-0 p-0">
+                                <span>Active</span><strong>@(client.IsActive ? "Yes" : "No")</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="sf-info-row flex-column align-items-start gap-1 border-0 p-0">
+                                <span>Created</span><strong>@client.CreatedAt.ToString("dd MMM yyyy")</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="sf-info-row flex-column align-items-start gap-1 border-0 p-0">
+                                <span>Updated</span><strong>@(client.UpdatedAt.HasValue ? client.UpdatedAt.Value.ToString("dd MMM yyyy") : "—")</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sf-panel h-100">
+                <div class="sf-panel-header">
+                    <h5>Recent visits</h5>
+                    <a asp-controller="Visit" asp-action="Index">View</a>
+                </div>
+                <div class="sf-panel-body">
+                    @if (!Model.RecentVisits.Any())
+                    {
+                        <p class="text-muted mb-0">No visits yet.</p>
+                    }
+                    else
+                    {
+                        foreach (var v in Model.RecentVisits)
+                        {
+                            <div class="sf-activity-item">
+                                <span class="sf-activity-dot"></span>
+                                <div>
+                                    <p>@v.ProductName · @v.Status · @v.CustomerResponse</p>
+                                    <time>@v.VisitDate.ToLocalTime().ToString("dd MMM yyyy")</time>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-form-footer">
+        <a asp-action="Index" class="sf-btn sf-btn-ghost">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+    </div>
+</div>
