@@ -1,0 +1,233 @@
+@model BiristaCRM.ViewModels.CreateStockViewModel
+@{
+    ViewData["Title"] = "Edit Stock";
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <a asp-action="Index" class="sf-back-link"><i class="bi bi-arrow-left"></i> Back to stock</a>
+            <h2>Edit Stock Entry</h2>
+            <p>Update inventory, pricing, transport expenses, or vehicle details.</p>
+        </div>
+    </div>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" autocomplete="off">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Unit" id="unitHiddenInput" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Section 1: Product & Supplier -->
+        <div class="sf-panel mb-3">
+            <div class="sf-panel-header">
+                <h5><i class="bi bi-box-seam me-2 text-muted"></i>Product &amp; Supplier Information</h5>
+            </div>
+            <div class="sf-panel-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="ProductId" class="form-label">Link to Catalog Product (Optional)</label>
+                        <select asp-for="ProductId" id="productSelect" class="form-select" asp-items="ViewBag.Products">
+                            <option value="">-- Custom / Other Product --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ProductName" class="form-label"></label>
+                        <span class="text-danger">*</span>
+                        <input asp-for="ProductName" id="productNameInput" class="form-control" />
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ProductSubType" class="form-label"></label>
+                        <input asp-for="ProductSubType" class="form-control" />
+                        <span asp-validation-for="ProductSubType" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ProductSender" class="form-label"></label>
+                        <span class="text-danger">*</span>
+                        <input asp-for="ProductSender" class="form-control" />
+                        <span asp-validation-for="ProductSender" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Pricing & Quantity -->
+        <div class="sf-panel mb-3">
+            <div class="sf-panel-header">
+                <h5><i class="bi bi-cash-stack me-2 text-muted"></i>Pricing &amp; Quantity</h5>
+            </div>
+            <div class="sf-panel-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="Price" class="form-label">Product Rate / Price (₹)</label>
+                        <span class="text-danger">*</span>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input asp-for="Price" id="priceInput" class="form-control" type="number" step="0.01" min="0" />
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Qty" class="form-label">Quantity</label>
+                        <span class="text-danger">*</span>
+                        <div class="input-group">
+                            <input asp-for="Qty" id="qtyInput" class="form-control" type="number" step="any" min="0.01" />
+                            <span class="input-group-text" id="stockUnitBadge">@(Model.Unit ?? "Unit")</span>
+                        </div>
+                        <span asp-validation-for="Qty" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Product Total Price (Price × Qty)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input asp-for="TotalPrice" id="totalPriceInput" class="form-control" type="number" step="0.01" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Transport & Vehicle Details -->
+        <div class="sf-panel mb-3">
+            <div class="sf-panel-header">
+                <h5><i class="bi bi-truck me-2 text-muted"></i>Transport &amp; Vehicle Logistics</h5>
+            </div>
+            <div class="sf-panel-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="VehicleType" class="form-label">Transport Medium / Vehicle</label>
+                        <input asp-for="VehicleType" list="vehicleOptions" class="form-control" placeholder="Select or type (e.g. Truck, Bus, Tempo)" />
+                        <datalist id="vehicleOptions">
+                            <option value="Truck"></option>
+                            <option value="Bus"></option>
+                            <option value="Tempo / Chhota Hathi"></option>
+                            <option value="Pickup"></option>
+                            <option value="Train / Cargo"></option>
+                            <option value="Courier / Parcel"></option>
+                            <option value="Other"></option>
+                        </datalist>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="VehicleNo" class="form-label">Vehicle Number (Optional)</label>
+                        <input asp-for="VehicleNo" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="FactoryToTransportCost" class="form-label">Factory to Transport Cost (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input asp-for="FactoryToTransportCost" id="factoryCostInput" class="form-control" type="number" step="0.01" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="TransportToCompanyCost" class="form-label">Transport to Company Cost (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input asp-for="TransportToCompanyCost" id="companyCostInput" class="form-control" type="number" step="0.01" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Grand Total / Landed Cost (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-bg-success">₹</span>
+                            <input asp-for="GrandTotalCost" id="grandTotalInput" class="form-control fw-bold" type="number" step="0.01" readonly style="background-color: #f0fdf4;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Date & Notes -->
+        <div class="sf-panel mb-3">
+            <div class="sf-panel-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Date" class="form-label">Stock Arrival Date</label>
+                        <span class="text-danger">*</span>
+                        <input asp-for="Date" class="form-control" type="date" value="@(Model.Date.ToString("yyyy-MM-dd"))" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Remark" class="form-label">Remarks / Bilty / LR No.</label>
+                        <input asp-for="Remark" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sf-form-footer">
+            <a asp-action="Index" class="sf-btn sf-btn-ghost">
+                <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="sf-btn sf-btn-primary">
+                <i class="bi bi-check-lg"></i> Update Stock Entry
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const productLookup = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProductData ?? new object[0]));
+
+        const productSelect = document.getElementById('productSelect');
+        const productNameInput = document.getElementById('productNameInput');
+        const stockUnitBadge = document.getElementById('stockUnitBadge');
+        const unitHiddenInput = document.getElementById('unitHiddenInput');
+        const priceInput = document.getElementById('priceInput');
+        const qtyInput = document.getElementById('qtyInput');
+        const totalPriceInput = document.getElementById('totalPriceInput');
+        const factoryCostInput = document.getElementById('factoryCostInput');
+        const companyCostInput = document.getElementById('companyCostInput');
+        const grandTotalInput = document.getElementById('grandTotalInput');
+
+        function calculateAll() {
+            const price = parseFloat(priceInput.value) || 0;
+            const qty = parseFloat(qtyInput.value) || 0;
+            const productTotal = price * qty;
+            totalPriceInput.value = productTotal.toFixed(2);
+
+            const factoryCost = parseFloat(factoryCostInput.value) || 0;
+            const companyCost = parseFloat(companyCostInput.value) || 0;
+            const grandTotal = productTotal + factoryCost + companyCost;
+            grandTotalInput.value = grandTotal.toFixed(2);
+        }
+
+        priceInput.addEventListener('input', calculateAll);
+        qtyInput.addEventListener('input', calculateAll);
+        factoryCostInput.addEventListener('input', calculateAll);
+        companyCostInput.addEventListener('input', calculateAll);
+
+        if (productSelect) {
+            productSelect.addEventListener('change', function () {
+                const selectedId = this.value;
+                if (!selectedId) {
+                    if (stockUnitBadge) stockUnitBadge.textContent = 'Unit';
+                    if (unitHiddenInput) unitHiddenInput.value = '';
+                    return;
+                }
+
+                const match = productLookup.find(p => p.id === selectedId);
+                if (match) {
+                    productNameInput.value = match.name;
+                    const u = match.unit || '';
+                    if (stockUnitBadge) stockUnitBadge.textContent = u || 'Unit';
+                    if (unitHiddenInput) unitHiddenInput.value = u;
+                    calculateAll();
+                }
+            });
+        }
+
+        calculateAll();
+    </script>
+}

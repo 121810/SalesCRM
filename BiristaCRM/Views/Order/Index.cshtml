@@ -120,8 +120,8 @@
                         <th>Order</th>
                         <th>Customer</th>
                         <th>Product</th>
-                        <th>Date</th>
-                        <th>Qty</th>
+                        <th class="text-nowrap" style="white-space: nowrap;">Date</th>
+                        <th class="text-nowrap" style="white-space: nowrap;">Qty</th>
                         <th>Amount</th>
                         <th>Mode</th>
                         <th>Payment</th>
@@ -139,8 +139,8 @@
                             <td class="sf-cell-strong">#@o.OrderNo</td>
                             <td>@o.ClientName</td>
                             <td>@o.ProductName</td>
-                            <td>@o.OrderDate.ToLocalTime().ToString("dd MMM yyyy")</td>
-                            <td>@o.Quantity.ToString("N0")kg</td>
+                            <td class="text-nowrap" style="white-space: nowrap;">@o.OrderDate.ToLocalTime().ToString("dd-MM-yyyy")</td>
+                            <td class="text-nowrap" style="white-space: nowrap;"><strong>@($"{o.Quantity.ToString("0.##")} {o.Unit}".Trim())</strong></td>
                             <td class="sf-cell-strong">₹@o.Amount.ToString("N0")</td>
                             <td>@o.PaymentMode</td>
                             <td>

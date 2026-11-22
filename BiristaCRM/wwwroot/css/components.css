@@ -131,29 +131,39 @@
     background: var(--sf-surface);
     border: 1px solid var(--sf-border);
     border-radius: var(--sf-radius-lg);
-    padding: 1.35rem 1.4rem;
+    padding: 1.25rem 1.35rem;
     display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
     align-items: flex-start;
-    gap: 1rem;
-    box-shadow: var(--sf-shadow);
+    gap: 0.75rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
     height: 100%;
-    transition: box-shadow var(--sf-transition), transform var(--sf-transition);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sf-stat-card:hover {
-    box-shadow: var(--sf-shadow-md);
-    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+    transform: translateY(-2px);
+    border-color: var(--sf-border-strong);
 }
 
 .sf-stat-icon {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     flex-shrink: 0;
+    transition: transform var(--sf-transition);
+}
+
+.sf-stat-card:hover .sf-stat-icon {
+    transform: scale(1.06);
 }
 
 .sf-stat-icon.teal {
@@ -184,22 +194,28 @@
 .sf-stat-body {
     min-width: 0;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .sf-stat-label {
     display: block;
-    font-size: var(--sf-font-sm);
-    font-weight: 500;
+    font-size: 0.8125rem;
+    font-weight: 550;
     color: var(--sf-muted);
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.45rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sf-stat-value {
     margin: 0;
-    font-size: 1.75rem;
-    font-weight: 650;
+    font-size: 1.85rem;
+    font-weight: 700;
     letter-spacing: -0.03em;
-    line-height: 1.2;
+    line-height: 1.15;
     color: var(--sf-text);
 }
 
@@ -207,14 +223,31 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    margin-top: 0.4rem;
-    font-size: var(--sf-font-sm);
+    margin-top: 0.65rem;
+    font-size: 0.775rem;
     font-weight: 500;
     color: var(--sf-success);
+    background: var(--sf-success-soft);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    width: fit-content;
+    white-space: nowrap;
 }
 
 .sf-stat-meta.down {
     color: var(--sf-danger);
+    background: var(--sf-danger-soft);
+}
+
+.sf-stat-meta.neutral {
+    color: var(--sf-muted);
+    background: var(--sf-surface-muted);
+    border: 1px solid var(--sf-border);
+}
+
+.sf-stat-meta.info {
+    color: var(--sf-info);
+    background: var(--sf-info-soft);
 }
 
 /* Panels */

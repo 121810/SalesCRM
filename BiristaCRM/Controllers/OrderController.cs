@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Interfaces;
+using BiristaCRM.Interfaces;
 using BiristaCRM.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +48,7 @@ namespace BiristaCRM.Controllers
             }
 
             await PopulateLookups();
-            return View(new CreateOrderViewModel { OrderDate = DateTime.Now });
+            return View(new CreateOrderViewModel { OrderDate = DateTime.Today });
         }
 
         [HttpPost]
@@ -96,12 +96,12 @@ namespace BiristaCRM.Controllers
                 Id = order.Id,
                 ClientId = order.ClientId,
                 ProductId = order.ProductId,
-                OrderDate = order.OrderDate.ToLocalTime(),
+                OrderDate = order.OrderDate.ToLocalTime().Date,
                 Quantity = order.Quantity,
                 Rate = order.Rate,
                 PaymentMode = order.PaymentMode,
                 PaymentStatus = order.PaymentStatus,
-                PaymentDate = order.PaymentDate?.ToLocalTime(),
+                PaymentDate = order.PaymentDate?.ToLocalTime().Date,
                 Remark = order.Remark
             });
         }
@@ -144,7 +144,19 @@ namespace BiristaCRM.Controllers
             var clients = await _clientService.GetAllClients();
             var products = await _productService.GetProductsAsync();
             ViewBag.Clients = new SelectList(clients.Where(c => c.IsActive), "Id", "BusinessName");
-            ViewBag.Products = new SelectList(products.Where(p => p.IsActive), "Id", "ProductName");
+            ViewBag.Products = products.Where(p => p.IsActive).Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = string.IsNullOrWhiteSpace(p.Unit) ? p.ProductName : $"{p.ProductName} ({p.Unit})"
+            }).ToList();
+
+            ViewBag.ProductData = products.Where(p => p.IsActive).Select(p => new
+            {
+                id = p.Id.ToString(),
+                name = p.ProductName,
+                price = p.Price,
+                unit = p.Unit ?? ""
+            }).ToList();
         }
     }
 }

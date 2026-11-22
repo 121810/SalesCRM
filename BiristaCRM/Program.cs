@@ -41,6 +41,7 @@ builder.Services.AddScoped<IProductService, ProductRepository>();
 builder.Services.AddScoped<IVisitService, VisitRepository>();
 builder.Services.AddScoped<IOrderService, OrderRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardRepository>();
+builder.Services.AddScoped<IStockService, StockRepository>();
 
 var app = builder.Build();
 

@@ -93,6 +93,8 @@ namespace BiristaCRM.Repository
                     Status = x.v.Status,
                     CustomerResponse = x.v.CustomerResponse,
                     IsSampleGiven = x.v.IsSampleGiven,
+                    SampleQuantity = x.v.SampleQuantity,
+                    Unit = x.p.Unit,
                     NextFollowUpDate = x.v.NextFollowUpDate,
                     Remark = x.v.Remark
                 }).ToListAsync();
@@ -119,7 +121,7 @@ namespace BiristaCRM.Repository
                 ClientId = model.ClientId,
                 ProductId = model.ProductId,
                 SalesPersonId = _current.UserId,
-                VisitDate = DateTime.SpecifyKind(model.VisitDate, DateTimeKind.Utc),
+                VisitDate = DateTime.SpecifyKind(model.VisitDate.Date, DateTimeKind.Utc),
                 Status = model.Status,
                 IsSampleGiven = model.IsSampleGiven,
                 SampleQuantity = model.SampleQuantity,
@@ -127,7 +129,7 @@ namespace BiristaCRM.Repository
                 OfferPrice = model.OfferPrice,
                 MonthlyRequirement = model.MonthlyRequirement,
                 NextFollowUpDate = model.NextFollowUpDate.HasValue
-                    ? DateTime.SpecifyKind(model.NextFollowUpDate.Value, DateTimeKind.Utc)
+                    ? DateTime.SpecifyKind(model.NextFollowUpDate.Value.Date, DateTimeKind.Utc)
                     : null,
                 CustomerResponse = model.CustomerResponse,
                 Remark = model.Remark,
@@ -146,7 +148,7 @@ namespace BiristaCRM.Repository
 
             visit.ClientId = model.ClientId;
             visit.ProductId = model.ProductId;
-            visit.VisitDate = DateTime.SpecifyKind(model.VisitDate, DateTimeKind.Utc);
+            visit.VisitDate = DateTime.SpecifyKind(model.VisitDate.Date, DateTimeKind.Utc);
             visit.Status = model.Status;
             visit.IsSampleGiven = model.IsSampleGiven;
             visit.SampleQuantity = model.SampleQuantity;
@@ -154,7 +156,7 @@ namespace BiristaCRM.Repository
             visit.OfferPrice = model.OfferPrice;
             visit.MonthlyRequirement = model.MonthlyRequirement;
             visit.NextFollowUpDate = model.NextFollowUpDate.HasValue
-                ? DateTime.SpecifyKind(model.NextFollowUpDate.Value, DateTimeKind.Utc)
+                ? DateTime.SpecifyKind(model.NextFollowUpDate.Value.Date, DateTimeKind.Utc)
                 : null;
             visit.CustomerResponse = model.CustomerResponse;
             visit.Remark = model.Remark;

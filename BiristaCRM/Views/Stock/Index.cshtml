@@ -1,0 +1,237 @@
+@using BiristaCRM.Interfaces
+@using BiristaCRM.Models
+@using BiristaCRM.ViewModels
+@inject ICurrentUserService CurrentUser
+@model List<StockMaster>
+@{
+    ViewData["Title"] = "Stock";
+    var stats = ViewBag.Stats as StockStatsViewModel ?? new StockStatsViewModel();
+    var filter = ViewBag.Filter as StockFilterViewModel ?? new StockFilterViewModel();
+    var senders = ViewBag.Senders as List<string> ?? new List<string>();
+}
+
+<div class="sf-page-enter">
+    <div class="sf-page-header">
+        <div>
+            <h2>Stock Management</h2>
+            <p>Track incoming inventory, suppliers, logistics expenses, and vehicle details.</p>
+        </div>
+        @if (!CurrentUser.IsSuperAdmin)
+        {
+            <div class="sf-page-actions">
+                <a asp-action="Create" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    Add Stock
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Table -->
+    <div class="sf-panel">
+        <div class="sf-panel-header">
+            <div>
+                <h5>Stock Directory</h5>
+                <span class="sf-panel-sub">@Model.Count records</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="sf-table">
+                <thead>
+                    <tr>
+                        <th class="text-nowrap" style="white-space: nowrap;">Date</th>
+                        <th>Product &amp; SubType</th>
+                        <th>Sender (Supplier)</th>
+                        <th class="text-nowrap" style="white-space: nowrap;">Qty</th>
+                        <th>Rate</th>
+                        <th>Landed Cost</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-muted text-center py-4">
+                                <div class="sf-empty">
+                                    <i class="bi bi-boxes"></i>
+                                    <h5>No stock entries found</h5>
+                                    <p>Click Add Stock to record your first inventory arrival.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        var totalTransport = item.FactoryToTransportCost + item.TransportToCompanyCost;
+                        <tr>
+                            <td class="text-nowrap" style="white-space: nowrap;">@item.Date.ToLocalTime().ToString("dd-MM-yyyy")</td>
+                            <td>
+                                <div class="sf-cell-strong">@item.ProductName</div>
+                                @if (!string.IsNullOrWhiteSpace(item.ProductSubType))
+                                {
+                                    <small class="text-muted">@item.ProductSubType</small>
+                                }
+                            </td>
+                            <td>
+                                <span class="sf-badge sf-badge-neutral">
+                                    <i class="bi bi-building me-1"></i>@item.ProductSender
+                                </span>
+                            </td>
+                            <td class="text-nowrap" style="white-space: nowrap;"><strong>@($"{item.Qty.ToString("0.##")} {item.Unit}".Trim())</strong></td>
+                            <td>₹@item.Price.ToString("N2")</td>
+                            <td>
+                                <span class="sf-badge sf-badge-success fs-6">
+                                    ₹@item.GrandTotalCost.ToString("N2")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1">
+                                    <button type="button" class="sf-btn-icon btn-view-stock" title="View Full Details"
+                                            data-date="@item.Date.ToLocalTime().ToString("dd-MM-yyyy")"
+                                            data-product="@item.ProductName"
+                                            data-subtype="@(string.IsNullOrWhiteSpace(item.ProductSubType) ? "—" : item.ProductSubType)"
+                                            data-sender="@item.ProductSender"
+                                            data-vehicle="@(string.IsNullOrWhiteSpace(item.VehicleType) ? "—" : item.VehicleType)"
+                                            data-vehicleno="@(string.IsNullOrWhiteSpace(item.VehicleNo) ? "—" : item.VehicleNo)"
+                                            data-qty="@($"{item.Qty.ToString("0.##")} {item.Unit}".Trim())"
+                                            data-rate="₹@item.Price.ToString("N2")"
+                                            data-producttotal="₹@item.TotalPrice.ToString("N2")"
+                                            data-factorycost="₹@item.FactoryToTransportCost.ToString("N2")"
+                                            data-companycost="₹@item.TransportToCompanyCost.ToString("N2")"
+                                            data-transporttotal="₹@totalTransport.ToString("N2")"
+                                            data-landedcost="₹@item.GrandTotalCost.ToString("N2")"
+                                            data-remark="@(string.IsNullOrWhiteSpace(item.Remark) ? "—" : item.Remark)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="sf-btn-icon" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this stock entry?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="sf-btn-icon danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Full Details Modal -->
+<div class="modal fade" id="stockDetailsModal" tabindex="-1" aria-labelledby="stockDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stockDetailsModalLabel">
+                    <i class="bi bi-boxes me-2 text-primary"></i>Stock Entry Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <!-- Product & Supplier -->
+                    <div class="col-12">
+                        <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">Product &amp; Supplier</h6>
+                        <div class="sf-panel p-3">
+                            <div class="sf-info-row mb-2"><span>Product Name</span><strong id="modalProduct">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Product SubType</span><strong id="modalSubType">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Sender / Supplier</span><strong id="modalSender">—</strong></div>
+                            <div class="sf-info-row"><span>Arrival Date</span><strong id="modalDate">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity & Cost -->
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">Quantity &amp; Product Cost</h6>
+                        <div class="sf-panel p-3 h-100">
+                            <div class="sf-info-row mb-2"><span>Quantity</span><strong id="modalQty">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Rate / Price</span><strong id="modalRate">—</strong></div>
+                            <div class="sf-info-row"><span>Product Total (Price × Qty)</span><strong id="modalProductTotal" class="text-primary">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Transport & Vehicle -->
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">Transport &amp; Vehicle Logistics</h6>
+                        <div class="sf-panel p-3 h-100">
+                            <div class="sf-info-row mb-2"><span>Vehicle Medium</span><strong id="modalVehicle">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Vehicle Number</span><strong id="modalVehicleNo">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Factory ➔ Transport</span><strong id="modalFactoryCost">—</strong></div>
+                            <div class="sf-info-row mb-2"><span>Transport ➔ Company</span><strong id="modalCompanyCost">—</strong></div>
+                            <div class="sf-info-row"><span>Total Transport</span><strong id="modalTransportTotal" class="text-warning">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Landed Cost Box -->
+                    <div class="col-12">
+                        <div class="p-3 rounded-3 d-flex justify-content-between align-items-center" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div>
+                                <span class="d-block text-muted small">Total Landed Cost (Product Total + Transport Expenses)</span>
+                                <h4 class="mb-0 fw-bold text-success" id="modalLandedCost">—</h4>
+                            </div>
+                            <span class="sf-badge sf-badge-success fs-6"><i class="bi bi-check-circle-fill me-1"></i>Net Landed Cost</span>
+                        </div>
+                    </div>
+
+                    <!-- Remarks -->
+                    <div class="col-12">
+                        <div class="sf-panel p-3">
+                            <span class="d-block text-muted small mb-1">Remarks / Bilty / LR No.</span>
+                            <div id="modalRemark" class="fw-semibold text-break">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="sf-btn sf-btn-ghost" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalElement = document.getElementById('stockDetailsModal');
+            if (!modalElement) return;
+
+            const modalInstance = new bootstrap.Modal(modalElement);
+
+            document.querySelectorAll('.btn-view-stock').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.getElementById('modalProduct').textContent = this.dataset.product || '—';
+                    document.getElementById('modalSubType').textContent = this.dataset.subtype || '—';
+                    document.getElementById('modalSender').textContent = this.dataset.sender || '—';
+                    document.getElementById('modalDate').textContent = this.dataset.date || '—';
+                    document.getElementById('modalQty').textContent = this.dataset.qty || '—';
+                    document.getElementById('modalRate').textContent = this.dataset.rate || '—';
+                    document.getElementById('modalProductTotal').textContent = this.dataset.producttotal || '—';
+                    document.getElementById('modalVehicle').textContent = this.dataset.vehicle || '—';
+                    document.getElementById('modalVehicleNo').textContent = this.dataset.vehicleno || '—';
+                    document.getElementById('modalFactoryCost').textContent = this.dataset.factorycost || '—';
+                    document.getElementById('modalCompanyCost').textContent = this.dataset.companycost || '—';
+                    document.getElementById('modalTransportTotal').textContent = this.dataset.transporttotal || '—';
+                    document.getElementById('modalLandedCost').textContent = this.dataset.landedcost || '—';
+                    document.getElementById('modalRemark').textContent = this.dataset.remark || '—';
+
+                    modalInstance.show();
+                });
+            });
+        });
+    </script>
+}

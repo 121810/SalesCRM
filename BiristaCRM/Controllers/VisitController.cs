@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Interfaces;
+using BiristaCRM.Interfaces;
 using BiristaCRM.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +49,7 @@ namespace BiristaCRM.Controllers
             }
 
             await PopulateLookups();
-            return View(new CreateVisitViewModel { VisitDate = DateTime.Now });
+            return View(new CreateVisitViewModel { VisitDate = DateTime.Today });
         }
 
         [HttpPost]
@@ -97,14 +97,14 @@ namespace BiristaCRM.Controllers
                 Id = visit.Id,
                 ClientId = visit.ClientId,
                 ProductId = visit.ProductId,
-                VisitDate = visit.VisitDate.ToLocalTime(),
+                VisitDate = visit.VisitDate.ToLocalTime().Date,
                 Status = visit.Status,
                 IsSampleGiven = visit.IsSampleGiven,
                 SampleQuantity = visit.SampleQuantity,
                 CurrentBuyingPrice = visit.CurrentBuyingPrice,
                 OfferPrice = visit.OfferPrice,
                 MonthlyRequirement = visit.MonthlyRequirement,
-                NextFollowUpDate = visit.NextFollowUpDate?.ToLocalTime(),
+                NextFollowUpDate = visit.NextFollowUpDate?.ToLocalTime().Date,
                 CustomerResponse = visit.CustomerResponse,
                 Remark = visit.Remark
             });
@@ -148,7 +148,18 @@ namespace BiristaCRM.Controllers
             var clients = await _clientService.GetAllClients();
             var products = await _productService.GetProductsAsync();
             ViewBag.Clients = new SelectList(clients.Where(c => c.IsActive), "Id", "BusinessName");
-            ViewBag.Products = new SelectList(products.Where(p => p.IsActive), "Id", "ProductName");
+            ViewBag.Products = products.Where(p => p.IsActive).Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = string.IsNullOrWhiteSpace(p.Unit) ? p.ProductName : $"{p.ProductName} ({p.Unit})"
+            }).ToList();
+
+            ViewBag.ProductData = products.Where(p => p.IsActive).Select(p => new
+            {
+                id = p.Id.ToString(),
+                name = p.ProductName,
+                unit = p.Unit ?? ""
+            }).ToList();
         }
     }
 }

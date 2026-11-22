@@ -119,11 +119,11 @@
                     <tr>
                         <th>Customer</th>
                         <th>Product</th>
-                        <th>Visit date</th>
+                        <th class="text-nowrap" style="white-space: nowrap;">Visit date</th>
                         <th>Status</th>
                         <th>Response</th>
                         <th>Sample</th>
-                        <th>Follow-up</th>
+                        <th class="text-nowrap" style="white-space: nowrap;">Follow-up</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -137,10 +137,7 @@
                         <tr>
                             <td class="sf-cell-strong">@v.ClientName</td>
                             <td>@v.ProductName</td>
-                            <td>
-                                <div>@v.VisitDate.ToLocalTime().ToString("dd MMM yyyy")</div>
-                                <small class="text-muted">@v.VisitDate.ToLocalTime().ToString("hh:mm tt")</small>
-                            </td>
+                            <td class="text-nowrap" style="white-space: nowrap;">@v.VisitDate.ToLocalTime().ToString("dd-MM-yyyy")</td>
                             <td>
                                 @if (v.Status == VisitStatus.OrderBooked || v.Status == VisitStatus.Interested)
                                 {
@@ -159,14 +156,19 @@
                             <td>
                                 @if (v.IsSampleGiven)
                                 {
-                                    <span class="sf-badge sf-badge-info"><span class="sf-status-dot"></span> Given</span>
+                                    <span class="sf-badge sf-badge-info">
+                                        <span class="sf-status-dot"></span>
+                                        @(v.SampleQuantity.HasValue && v.SampleQuantity.Value > 0
+                                            ? $"Given ({v.SampleQuantity.Value.ToString("0.##")} {v.Unit}".Trim() + ")"
+                                            : "Given")
+                                    </span>
                                 }
                                 else
                                 {
                                     <span class="sf-badge sf-badge-neutral"><span class="sf-status-dot"></span> No</span>
                                 }
                             </td>
-                            <td>@(v.NextFollowUpDate?.ToLocalTime().ToString("dd MMM") ?? "—")</td>
+                            <td class="text-nowrap" style="white-space: nowrap;">@(v.NextFollowUpDate?.ToLocalTime().ToString("dd-MM-yyyy") ?? "—")</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
                                     <a asp-action="Edit" asp-route-id="@v.Id" class="sf-btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>

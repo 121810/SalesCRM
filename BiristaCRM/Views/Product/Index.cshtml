@@ -1,4 +1,4 @@
-﻿@using BiristaCRM.Interfaces
+@using BiristaCRM.Interfaces
 @using BiristaCRM.Models
 @using BiristaCRM.ViewModels
 @inject ICurrentUserService CurrentUser
@@ -34,62 +34,7 @@
         <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
-    <form method="get" asp-action="Index" class="sf-toolbar" data-sf-search>
-        <div class="row g-3 align-items-end">
-            <div class="col-lg-5">
-                <label class="form-label">Search products</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" name="Search" value="@filter.Search" class="form-control" placeholder="Name or product code" />
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">Status</label>
-                <select name="IsActive" class="form-select">
-                    <option value="">All</option>
-                    <option value="true" selected="@(filter.IsActive == true)">Active</option>
-                    <option value="false" selected="@(filter.IsActive == false)">Inactive</option>
-                </select>
-            </div>
-            <div class="col-lg-2">
-                <button type="submit" class="sf-btn sf-btn-primary w-100 justify-content-center">Filter</button>
-            </div>
-            <div class="col-lg-2">
-                <a asp-action="Index" class="sf-btn sf-btn-ghost w-100 justify-content-center">Reset</a>
-            </div>
-        </div>
-    </form>
-
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <div class="sf-stat-card">
-                <div class="sf-stat-icon teal"><i class="bi bi-box-seam"></i></div>
-                <div class="sf-stat-body">
-                    <span class="sf-stat-label">Matching SKUs</span>
-                    <h3 class="sf-stat-value">@Model.Count</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="sf-stat-card">
-                <div class="sf-stat-icon green"><i class="bi bi-check-circle"></i></div>
-                <div class="sf-stat-body">
-                    <span class="sf-stat-label">Active</span>
-                    <h3 class="sf-stat-value">@Model.Count(p => p.IsActive)</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="sf-stat-card">
-                <div class="sf-stat-icon amber"><i class="bi bi-pause-circle"></i></div>
-                <div class="sf-stat-body">
-                    <span class="sf-stat-label">Inactive</span>
-                    <h3 class="sf-stat-value">@Model.Count(p => !p.IsActive)</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Table -->
     <div class="sf-panel">
         <div class="sf-panel-header">
             <div>
@@ -104,7 +49,6 @@
                         <th>Product</th>
                         <th>Code</th>
                         <th>Unit</th>
-                        <th>Price</th>
                         <th>Status</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -112,7 +56,7 @@
                 <tbody>
                     @if (!Model.Any())
                     {
-                        <tr><td colspan="6" class="text-muted text-center py-4">No products found.</td></tr>
+                        <tr><td colspan="5" class="text-muted text-center py-4">No products found.</td></tr>
                     }
                     @foreach (var p in Model)
                     {
@@ -125,7 +69,6 @@
                             </td>
                             <td><code>@(p.ProductCode ?? "—")</code></td>
                             <td>@(p.Unit ?? "—")</td>
-                            <td class="sf-cell-strong">₹@p.Price.ToString("N0")</td>
                             <td>
                                 @if (p.IsActive)
                                 {

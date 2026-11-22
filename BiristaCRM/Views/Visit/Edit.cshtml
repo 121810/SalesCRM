@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VisitDate" class="form-label"></label>
-                        <input asp-for="VisitDate" class="form-control" type="datetime-local" />
+                        <input asp-for="VisitDate" class="form-control" type="date" value="@(Model.VisitDate.ToString("yyyy-MM-dd"))" />
                     </div>
                     <div class="col-md-4">
                         <label asp-for="Status" class="form-label"></label>
@@ -56,7 +56,10 @@
                     </div>
                     <div class="col-md-3">
                         <label asp-for="SampleQuantity" class="form-label"></label>
-                        <input asp-for="SampleQuantity" class="form-control" />
+                        <div class="input-group">
+                            <input asp-for="SampleQuantity" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text visitUnitBadge">Unit</span>
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <label asp-for="CurrentBuyingPrice" class="form-label"></label>
@@ -68,11 +71,14 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="MonthlyRequirement" class="form-label"></label>
-                        <input asp-for="MonthlyRequirement" class="form-control" />
+                        <div class="input-group">
+                            <input asp-for="MonthlyRequirement" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text visitUnitBadge">Unit</span>
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="NextFollowUpDate" class="form-label"></label>
-                        <input asp-for="NextFollowUpDate" class="form-control" type="datetime-local" />
+                        <input asp-for="NextFollowUpDate" class="form-control" type="date" value="@(Model.NextFollowUpDate?.ToString("yyyy-MM-dd"))" />
                     </div>
                     <div class="col-12">
                         <label asp-for="Remark" class="form-label"></label>
@@ -90,4 +96,23 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const productLookup = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProductData ?? new object[0]));
+            const productSelect = document.getElementById('ProductId');
+            const unitBadges = document.querySelectorAll('.visitUnitBadge');
+
+            function updateUnit() {
+                if (!productSelect || !unitBadges.length) return;
+                const match = productLookup.find(p => p.id === productSelect.value);
+                const unit = (match && match.unit) ? match.unit : 'Unit';
+                unitBadges.forEach(b => b.textContent = unit);
+            }
+
+            if (productSelect) {
+                productSelect.addEventListener('change', updateUnit);
+                updateUnit();
+            }
+        });
+    </script>
 }

@@ -173,8 +173,9 @@ namespace BiristaCRM.ViewModels
         public Guid ProductId { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
         [Display(Name = "Visit Date")]
-        public DateTime VisitDate { get; set; } = DateTime.UtcNow;
+        public DateTime VisitDate { get; set; } = DateTime.Today;
 
         [Required]
         [Display(Name = "Status")]
@@ -195,6 +196,7 @@ namespace BiristaCRM.ViewModels
         [Display(Name = "Monthly Requirement")]
         public decimal? MonthlyRequirement { get; set; }
 
+        [DataType(DataType.Date)]
         [Display(Name = "Next Follow-Up Date")]
         public DateTime? NextFollowUpDate { get; set; }
 
@@ -219,8 +221,9 @@ namespace BiristaCRM.ViewModels
         public Guid ProductId { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
         [Display(Name = "Order Date")]
-        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+        public DateTime OrderDate { get; set; } = DateTime.Today;
 
         [Required]
         [Range(0.01, double.MaxValue)]
@@ -240,6 +243,7 @@ namespace BiristaCRM.ViewModels
         [Display(Name = "Payment Status")]
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
+        [DataType(DataType.Date)]
         [Display(Name = "Payment Date")]
         public DateTime? PaymentDate { get; set; }
 
@@ -257,6 +261,8 @@ namespace BiristaCRM.ViewModels
         public VisitStatus Status { get; set; }
         public CustomerResponse CustomerResponse { get; set; }
         public bool IsSampleGiven { get; set; }
+        public decimal? SampleQuantity { get; set; }
+        public string? Unit { get; set; }
         public DateTime? NextFollowUpDate { get; set; }
         public string? Remark { get; set; }
     }
@@ -270,6 +276,7 @@ namespace BiristaCRM.ViewModels
         public string SalesPersonName { get; set; } = string.Empty;
         public DateTime OrderDate { get; set; }
         public decimal Quantity { get; set; }
+        public string? Unit { get; set; }
         public decimal Amount { get; set; }
         public PaymentMode PaymentMode { get; set; }
         public PaymentStatus PaymentStatus { get; set; }

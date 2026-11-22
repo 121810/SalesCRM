@@ -1,4 +1,4 @@
-﻿using BiristaCRM.Models;
+using BiristaCRM.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BiristaCRM.Data
@@ -20,5 +20,7 @@ namespace BiristaCRM.Data
         public DbSet<VisitMaster> VisitMasters { get; set; }
 
         public DbSet<OrderMaster> OrderMasters { get; set; }
+
+        public DbSet<StockMaster> StockMasters { get; set; }
     }
 }

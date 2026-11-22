@@ -97,6 +97,7 @@ namespace BiristaCRM.Repository
                     SalesPersonName = x.u.FullName,
                     OrderDate = x.o.OrderDate,
                     Quantity = x.o.Quantity,
+                    Unit = x.p.Unit,
                     Amount = x.o.Amount,
                     PaymentMode = x.o.PaymentMode,
                     PaymentStatus = x.o.PaymentStatus
@@ -127,14 +128,14 @@ namespace BiristaCRM.Repository
                 ProductId = model.ProductId,
                 SalesPersonId = _current.UserId,
                 OrderNo = orderNo,
-                OrderDate = DateTime.SpecifyKind(model.OrderDate, DateTimeKind.Utc),
+                OrderDate = DateTime.SpecifyKind(model.OrderDate.Date, DateTimeKind.Utc),
                 Quantity = model.Quantity,
                 Rate = model.Rate,
                 Amount = model.Quantity * model.Rate,
                 PaymentMode = model.PaymentMode,
                 PaymentStatus = model.PaymentStatus,
                 PaymentDate = model.PaymentDate.HasValue
-                    ? DateTime.SpecifyKind(model.PaymentDate.Value, DateTimeKind.Utc)
+                    ? DateTime.SpecifyKind(model.PaymentDate.Value.Date, DateTimeKind.Utc)
                     : null,
                 Remark = model.Remark,
                 CreatedBy = _current.UserId,
@@ -161,14 +162,14 @@ namespace BiristaCRM.Repository
 
             order.ClientId = model.ClientId;
             order.ProductId = model.ProductId;
-            order.OrderDate = DateTime.SpecifyKind(model.OrderDate, DateTimeKind.Utc);
+            order.OrderDate = DateTime.SpecifyKind(model.OrderDate.Date, DateTimeKind.Utc);
             order.Quantity = model.Quantity;
             order.Rate = model.Rate;
             order.Amount = model.Quantity * model.Rate;
             order.PaymentMode = model.PaymentMode;
             order.PaymentStatus = model.PaymentStatus;
             order.PaymentDate = model.PaymentDate.HasValue
-                ? DateTime.SpecifyKind(model.PaymentDate.Value, DateTimeKind.Utc)
+                ? DateTime.SpecifyKind(model.PaymentDate.Value.Date, DateTimeKind.Utc)
                 : null;
             order.Remark = model.Remark;
             order.UpdatedAt = DateTime.UtcNow;

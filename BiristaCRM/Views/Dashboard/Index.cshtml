@@ -68,7 +68,7 @@
                 <div class="sf-stat-body">
                     <span class="sf-stat-label">Today's Visits</span>
                     <h3 class="sf-stat-value" data-count="@Model.TodaysVisits">@Model.TodaysVisits</h3>
-                    <span class="sf-stat-meta">
+                    <span class="sf-stat-meta info">
                         <span class="sf-live-dot" style="width:6px;height:6px;display:inline-block;"></span>
                         @Model.VisitsInProgress in progress
                     </span>
@@ -91,7 +91,7 @@
                 <div class="sf-stat-body">
                     <span class="sf-stat-label">Revenue (MTD)</span>
                     <h3 class="sf-stat-value">@revenueDisplay</h3>
-                    <span class="sf-stat-meta">This month</span>
+                    <span class="sf-stat-meta neutral">This month</span>
                 </div>
             </div>
         </div>
@@ -193,7 +193,7 @@
                             <div class="sf-list-item">
                                 <div>
                                     <strong>#@o.OrderNo</strong>
-                                    <small>@o.ClientName · @o.PaymentMode</small>
+                                    <small>@o.ClientName · @o.PaymentMode @(o.Quantity > 0 ? $"· {o.Quantity.ToString("0.##")} {o.Unit}".Trim() : "")</small>
                                 </div>
                                 <strong class="text-success">₹@o.Amount.ToString("N0")</strong>
                             </div>

@@ -67,16 +67,20 @@ namespace BiristaCRM.Repository
             var recentOrders = await (
                 from o in orders.OrderByDescending(x => x.OrderDate).Take(5)
                 join c in _db.ClientMasters on o.ClientId equals c.Id
+                join p in _db.ProductMasters on o.ProductId equals p.Id into prod
+                from p in prod.DefaultIfEmpty()
                 select new OrderListItemViewModel
                 {
                     Id = o.Id,
                     OrderNo = o.OrderNo,
                     ClientName = c.BusinessName,
+                    ProductName = p != null ? p.ProductName : string.Empty,
                     OrderDate = o.OrderDate,
                     Amount = o.Amount,
                     PaymentMode = o.PaymentMode,
                     PaymentStatus = o.PaymentStatus,
-                    Quantity = o.Quantity
+                    Quantity = o.Quantity,
+                    Unit = p != null ? p.Unit : null
                 }).ToListAsync();
 
             var followUps = await (
@@ -88,7 +92,7 @@ namespace BiristaCRM.Repository
                 select new FollowUpItemViewModel
                 {
                     ClientName = c.BusinessName,
-                    Detail = (v.Remark ?? v.Status.ToString()) + " · " + (v.NextFollowUpDate!.Value.ToString("hh:mm tt")),
+                    Detail = (v.Remark ?? v.Status.ToString()) + " · " + (v.NextFollowUpDate!.Value.ToString("dd MMM yyyy")),
                     StatusLabel = v.Status.ToString(),
                     BadgeClass = v.Status == VisitStatus.FollowUp ? "sf-badge-warning" :
                                  v.Status == VisitStatus.OrderBooked ? "sf-badge-success" : "sf-badge-info"
